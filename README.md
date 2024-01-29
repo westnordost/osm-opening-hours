@@ -2,7 +2,7 @@
 
 A Kotlin multiplatform library to parse OpenStreetMap opening hours from a string into a data model and back.
 
-- It compiles to Java bytecode, JavaScript and native
+- It is pure Kotlin, no dependencies
 
 
 - It mostly follows the OpenStreetMap [opening hours specification](https://wiki.openstreetmap.org/wiki/Key:opening_hours/specification). For details and remarks, 
