@@ -12,7 +12,6 @@ repositories {
 kotlin {
     group = "de.westnordost"
     version = "0.1.0"
-    name = "osm-opening-hours"
 
     jvm()
     js {
@@ -55,7 +54,7 @@ val javadocJar = tasks.register<Jar>("javadocJar") {
 publishing {
     publications {
         withType<MavenPublication> {
-            artifactId = name + if (name != "kotlinMultiplatform") "-$name" else ""
+            artifactId = rootProject.name + if (name != "kotlinMultiplatform") "-$name" else ""
             artifact(javadocJar)
             pom {
                 name.set("osm-opening-hours")
