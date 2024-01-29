@@ -1,0 +1,16 @@
+.gradle
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!library/src/commonMain/**/build/
+!library/src/commonTest/**/build/
+
+### IntelliJ IDEA ###
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+!library/src/commonMain/**/out/
+!library/src/commonTest/**/out/
+
+.DS_Store
