@@ -24,6 +24,9 @@ fun main() {
         .toList()
         .asReversed()
 
+    val invalidButUnambiguousOhStrings = mutableListOf<String>()
+    val invalidOhStrings = mutableListOf<String>()
+
     val timeSource = TimeSource.Monotonic
     var total = 0L
 
@@ -88,8 +91,20 @@ fun main() {
         if (strictHours != null) {
             valid += count
         }
+        if (strictHours == null && hours != null) {
+            invalidButUnambiguousOhStrings.add("$count\t$oh\r\n")
+        }
+        if (strictHours == null && hours == null) {
+            invalidOhStrings.add("$count\t$oh\r\n")
+        }
 
         total += count
+    }
+    FileSystem.SYSTEM.write("./src/jvmTest/resources/invalid_but_unambiguous_opening_hours.tsv".toPath()) {
+        invalidButUnambiguousOhStrings.asReversed().forEach { writeUtf8(it) }
+    }
+    FileSystem.SYSTEM.write("./src/jvmTest/resources/invalid_opening_hours.tsv".toPath()) {
+        invalidOhStrings.asReversed().forEach { writeUtf8(it) }
     }
 
     println("Parsed $total opening hours strings.")
