@@ -1,5 +1,5 @@
 plugins {
-    kotlin("multiplatform") version "1.9.22"
+    kotlin("multiplatform") version "2.1.0"
     id("maven-publish")
     id("signing")
     id("org.jetbrains.dokka") version "1.9.10"
@@ -40,7 +40,7 @@ kotlin {
         jvmTest {
             dependencies {
                 implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.12")
-                implementation("ch.poole:OpeningHoursParser:0.28.1")
+                implementation("ch.poole:OpeningHoursParser:0.28.2")
             }
         }
     }
