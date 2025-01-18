@@ -17,7 +17,7 @@ A Kotlin multiplatform library to parse OpenStreetMap opening hours from a strin
 - It is very fast. Expect one order of magnitude faster than other opening hours syntax parsers, 
   e.g. it parses the average opening hours string about 10x as fast as the Java [OpeningHoursParser](https://github.com/simonpoole/OpeningHoursParser).
 
-  See `src/jvmTest/kotlin/tasks/print_statistics/PrintStatistics.kt` for the script that measures it.
+  See [`src/jvmTest/kotlin/tasks/print_statistics/PrintStatistics.kt`](src/jvmTest/kotlin/tasks/print_statistics/PrintStatistics.kt) for the script that measures it.
 
 
 It is currently used in [StreetComplete](https://github.com/streetcomplete/streetcomplete).
