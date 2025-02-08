@@ -44,7 +44,7 @@ val hoursString = hours?.toString()
 
 # Specification
 
-It mostly follows the OpenStreetMap [opening hours specification](https://wiki.openstreetmap.org/wiki/Key:opening_hours/specification) version 0.7.3, with a few
+It mostly follows the OpenStreetMap [opening hours specification](https://wiki.openstreetmap.org/wiki/Key:opening_hours/specification) version 0.7.4, with a few
 additions/remarks:
 
 - **Whitespaces**: e.g. `Jan05Mo-Fr08:00`
@@ -54,16 +54,6 @@ additions/remarks:
   allowed and only required in places where two successive tokens use the same set of characters
   (e.g. `week05␣05:00`, `Su␣sunset`, `Jan05:␣05:00`). Other parsers consider the lack of spaces 
   valid too, though the canonical form always contains spaces in-between for clarity and readability.
-
-
-- **Specific weekday dates**: e.g. `Jul Fr[2]-Aug Mo[-1]`
-
-  (= Second Friday in July to last Monday in August.) This [undocumented extension](https://wiki.openstreetmap.org/wiki/Talk:Key:opening_hours/specification#Undocumented_extensions_to_spec_0.7.2)
-  to the specification is supported by at least [the reference implementation](https://openingh.openstreetmap.de/evaluation_tool/?EXP=Jul%20Fr[2]%20-%20Aug%20Mo[-1])
-  and the Java [OpeningHoursParser](https://github.com/simonpoole/OpeningHoursParser).
-  It is supported here also because it has (minor) use and there is no other, valid, way to express 
-  its semantic.
-
 
 - **More restrictive date ranges within month**: e.g. `easter+Su-09-We +3 days` considered invalid
   
