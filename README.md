@@ -7,7 +7,7 @@ A Kotlin multiplatform library to parse OpenStreetMap opening hours from a strin
 
 - It mostly follows the OpenStreetMap [opening hours specification](https://wiki.openstreetmap.org/wiki/Key:opening_hours/specification). For details and remarks, 
   see the section [Specification](#Specification).
-  As of Jan 2025, 96.48% of opening hours strings in the wild are considered valid, 99.10% are understood.
+  As of Feb 2025, 96.49% of opening hours strings in the wild are considered valid, 99.11% are understood.
 
 
 - The data model is type-safe, i.e. it is not possible to create an invalid opening hours string 
@@ -25,12 +25,12 @@ It is currently used in [StreetComplete](https://github.com/streetcomplete/stree
 
 # Copyright and License
 
-© 2024 Tobias Zwick. This library is released under the terms of the MIT License.
+© 2024-2025 Tobias Zwick. This library is released under the terms of the MIT License.
 
 
 # Usage
 
-Add [de.westnordost:osm-opening-hours:0.1.0](https://mvnrepository.com/artifact/de.westnordost/osm-opening-hours/0.1.0) as a Maven dependency or download the jar from there.
+Add [de.westnordost:osm-opening-hours:0.2.0](https://mvnrepository.com/artifact/de.westnordost/osm-opening-hours/0.2.0) as a Maven dependency or download the jar from there.
 
 
 Usage e.g.

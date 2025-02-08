@@ -11,7 +11,7 @@ repositories {
 
 kotlin {
     group = "de.westnordost"
-    version = "0.1.0"
+    version = "0.2.0"
 
     jvm()
     js {
@@ -39,7 +39,7 @@ kotlin {
         }
         jvmTest {
             dependencies {
-                implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.12")
+                implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.14")
                 implementation("ch.poole:OpeningHoursParser:0.28.2")
             }
         }
