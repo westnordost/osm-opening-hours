@@ -90,7 +90,9 @@ private fun StringWithCursor.parseCalendarDate(
     if (!lenient && day.length != 2) fail("Expected month day to consist of two digits")
 
     val weekdayOffset = parseWeekdayOffset(lenient)
-    return CalendarDate(year, month, day.toInt(), weekdayOffset)
+
+    val dayOffset = parseDayOffset(lenient) ?: 0
+    return CalendarDate(year, month, day.toInt(), weekdayOffset, dayOffset)
 }
 
 private fun StringWithCursor.nextIsClockTime(lenient: Boolean): Boolean {
@@ -131,7 +133,10 @@ private fun StringWithCursor.parseSpecificWeekdayDate(
         return null
     }
     val nthPointSelector = if (minus) LastNth(nth) else Nth(nth)
-    return SpecificWeekdayDate(year, month, weekday, nthPointSelector)
+
+    val dayOffset = parseDayOffset(lenient) ?: 0
+
+    return SpecificWeekdayDate(year, month, weekday, nthPointSelector, dayOffset)
 }
 
 private fun StringWithCursor.nextIsWeekdayOrHolidaySelector(lenient: Boolean): Boolean {

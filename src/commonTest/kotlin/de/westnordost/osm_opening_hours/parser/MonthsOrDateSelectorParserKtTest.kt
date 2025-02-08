@@ -105,15 +105,15 @@ class MonthsOrDateSelectorParserKtTest {
         )
 
         assertEquals(
-            CalendarDate(June, 1),
+            CalendarDate(June, 1, dayOffset = 1),
             parseDate("Jun 01 +1 day")
         )
         assertEquals(
-            CalendarDate(June, 1, NextWeekday(Sunday)),
+            CalendarDate(June, 1, NextWeekday(Sunday), dayOffset = 1),
             parseDate("Jun 01 +Su +1 day")
         )
         assertEquals(
-            CalendarDate(June, 1, NextWeekday(Sunday)),
+            CalendarDate(June, 1, NextWeekday(Sunday), dayOffset = 1),
             parseDate("Jun 01 +Su+1 day")
         )
 
@@ -121,6 +121,7 @@ class MonthsOrDateSelectorParserKtTest {
         assertEquals(SpecificWeekdayDate(June, Friday, LastNth(1)), parseDate("Jun Fr[-1]"))
         assertEquals(SpecificWeekdayDate(2000, June, Friday, Nth(1)), parseDate("Jun Fr[1]", false, 2000))
         assertEquals(SpecificWeekdayDate(June, Friday, LastNth(1)), parseDate("Jun Fr [ - 1 ] "))
+        assertEquals(SpecificWeekdayDate(June, Friday, Nth(1), -3), parseDate("Jun Fr[1] -3 days"))
         assertEquals(null, parseDate("Jun Fr[1 - 2]"))
         assertEquals(null, parseDate("Jun Fr[1 , 2]"))
         assertEquals(null, parseDate("Jun Fr[1] , PH"))

@@ -50,6 +50,7 @@ class CalendarDateTest {
         assertEquals("2000 Jul 22", CalendarDate(2000, July, 22).toString())
         assertEquals("Jul 22 +Fr", CalendarDate(July, 22, NextWeekday(Weekday.Friday)).toString())
         assertEquals("Jul 22 -Su", CalendarDate(July, 22, PreviousWeekday(Weekday.Sunday)).toString())
+        assertEquals("Jul 22 -Su +3 days", CalendarDate(July, 22, PreviousWeekday(Weekday.Sunday), 3).toString())
     }
 
     @Test fun bounds() {
@@ -192,5 +193,6 @@ class SpecificWeekdayDateTest {
     @Test fun to_string() {
         assertEquals("2000 Jan Fr[1]", SpecificWeekdayDate(2000, January, Weekday.Friday, Nth(1)).toString())
         assertEquals("Jan Fr[1]", SpecificWeekdayDate(January, Weekday.Friday, Nth(1)).toString())
+        assertEquals("Jan Fr[1] -2 days", SpecificWeekdayDate(January, Weekday.Friday, Nth(1), -2).toString())
     }
 }

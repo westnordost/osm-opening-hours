@@ -54,10 +54,11 @@ data class CalendarDate(
     val year: Int?,
     val month: Month,
     val day: Int,
-    val weekdayOffset: WeekdayOffset? = null
+    val weekdayOffset: WeekdayOffset? = null,
+    val dayOffset: Int = 0
 ) : Date {
-    constructor(month: Month, day: Int, weekdayOffset: WeekdayOffset? = null)
-            : this(null, month, day, weekdayOffset)
+    constructor(month: Month, day: Int, weekdayOffset: WeekdayOffset? = null, dayOffset: Int = 0)
+            : this(null, month, day, weekdayOffset, dayOffset)
 
     init {
         if (year != null) validateYear("year", year)
@@ -65,7 +66,13 @@ data class CalendarDate(
     }
 
     override fun toString() =
-        sequenceOf(year, month, day.toString().padStart(2, '0'), weekdayOffset).joinNonEmptyStrings(" ")
+        sequenceOf(
+            year,
+            month,
+            day.toString().padStart(2, '0'),
+            weekdayOffset,
+            dayOffsetToString(dayOffset)
+        ).joinNonEmptyStrings(" ")
 }
 
 /** A date consisting of optional [year], [month] and a specific weekday
@@ -75,18 +82,27 @@ data class SpecificWeekdayDate(
     val year: Int?,
     val month: Month,
     val weekday: Weekday,
-    val nthPointSelector: NthPointSelector
+    val nthPointSelector: NthPointSelector,
+    val dayOffset: Int = 0
 ) : Date {
-    constructor(month: Month, weekday: Weekday, nthPointSelector: NthPointSelector)
-            : this(null, month, weekday, nthPointSelector)
+    constructor(
+        month: Month,
+        weekday: Weekday,
+        nthPointSelector: NthPointSelector,
+        dayOffset: Int = 0
+    ) : this(null, month, weekday, nthPointSelector, dayOffset)
 
     init {
         if (year != null) validateYear("year", year)
     }
 
     override fun toString() =
-        if (year != null) "$year $month $weekday[$nthPointSelector]"
-        else              "$month $weekday[$nthPointSelector]"
+        sequenceOf(
+            year,
+            month,
+            "$weekday[$nthPointSelector]",
+            dayOffsetToString(dayOffset)
+        ).joinNonEmptyStrings(" ")
 }
 
 /** An [annualEvent], optionally in a specific [year] and optional offsets
