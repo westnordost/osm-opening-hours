@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+
 plugins {
     kotlin("multiplatform") version "2.1.0"
     id("maven-publish")
@@ -14,19 +16,49 @@ kotlin {
     version = "0.2.0"
 
     jvm()
-    js {
+
+    js(IR) {
         browser()
         nodejs()
     }
-    linuxX64()
-    linuxArm64()
-    mingwX64()
 
-    macosX64()
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs {
+      browser()
+      nodejs()
+      d8()
+    }
+
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmWasi {
+      nodejs()
+    }
+
+    // native tier 1
     macosArm64()
     iosSimulatorArm64()
-    iosX64()
     iosArm64()
+
+    // native tier 2
+    macosX64()
+    iosX64()
+    linuxX64()
+    linuxArm64()
+    watchosSimulatorArm64()
+    watchosX64()
+    watchosArm32()
+    watchosArm64()
+    tvosSimulatorArm64()
+    tvosX64()
+    tvosArm64()
+
+    // native tier 3
+    mingwX64()
+    androidNativeArm32()
+    androidNativeArm64()
+    androidNativeX86()
+    androidNativeX64()
+    watchosDeviceArm64()
 
     applyDefaultHierarchyTemplate()
 
