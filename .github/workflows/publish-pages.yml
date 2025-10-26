@@ -1,0 +1,30 @@
+name: Publish Documentation to GitHub Pages
+
+on:
+    workflow_dispatch:
+
+permissions:
+    contents: read
+
+jobs:
+    publish-pages:
+        runs-on: ubuntu-latest
+        permissions:
+            pages: write
+            id-token: write
+        environment:
+            name: github-pages
+            url: ${{ steps.deploy-pages.outputs.page_url }}
+        steps:
+            - uses: actions/checkout@v5
+            - uses: actions/setup-java@v5
+              with:
+                  distribution: temurin
+                  java-version: 21
+            - run: |
+                  ./gradlew dokkaGenerate
+            - uses: actions/upload-pages-artifact@v4
+              with:
+                  path: build/dokka/html
+            - uses: actions/deploy-pages@v4
+              id: deploy-pages
