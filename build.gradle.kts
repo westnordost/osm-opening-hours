@@ -4,7 +4,7 @@ plugins {
     kotlin("multiplatform") version "2.1.0"
     id("maven-publish")
     id("signing")
-    id("org.jetbrains.dokka") version "1.9.10"
+    id("org.jetbrains.dokka") version "2.1.0"
 }
 
 repositories {
@@ -78,9 +78,21 @@ kotlin {
     }
 }
 
+dokka {
+    moduleName.set("OSM Opening Hours")
+    dokkaSourceSets {
+        configureEach {
+            sourceLink {
+                remoteUrl("https://github.com/westnordost/osm-opening-hours/tree/v${project.version}/")
+                localDirectory = rootDir
+            }
+        }
+    }
+}
+
 val javadocJar = tasks.register<Jar>("javadocJar") {
     archiveClassifier.set("javadoc")
-    from(tasks.dokkaHtml)
+    from(tasks.dokkaGeneratePublicationHtml.map { it.outputDirectory })
 }
 
 publishing {
