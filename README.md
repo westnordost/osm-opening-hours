@@ -1,3 +1,6 @@
+[![Maven Central](https://img.shields.io/maven-central/v/de.westnordost/osm-opening-hours?label=Maven)](https://central.sonatype.com/artifact/de.westnordost/osm-opening-hours)
+[![API Reference](https://img.shields.io/badge/API_Reference-blue?logo=Kotlin&logoColor=white)](https://westnordost.github.io/osm-opening-hours/)
+
 # osm-opening-hours
 
 A Kotlin multiplatform library to parse OpenStreetMap opening hours from a string into a data model and back.
