@@ -2,8 +2,7 @@ import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
     kotlin("multiplatform") version "2.1.0"
-    id("maven-publish")
-    id("signing")
+    id("com.vanniktech.maven.publish") version "0.34.0"
     id("org.jetbrains.dokka") version "2.1.0"
 }
 
@@ -11,9 +10,10 @@ repositories {
     mavenCentral()
 }
 
+group = "de.westnordost"
+version = "0.3.0"
+
 kotlin {
-    group = "de.westnordost"
-    version = "0.2.0"
 
     jvm()
 
@@ -90,64 +90,39 @@ dokka {
     }
 }
 
-val javadocJar = tasks.register<Jar>("javadocJar") {
-    archiveClassifier.set("javadoc")
-    from(tasks.dokkaGeneratePublicationHtml.map { it.outputDirectory })
-}
+mavenPublishing {
+    publishToMavenCentral()
 
-publishing {
-    publications {
-        withType<MavenPublication> {
-            artifactId = rootProject.name + if (name != "kotlinMultiplatform") "-$name" else ""
-            artifact(javadocJar)
-            pom {
-                name.set("osm-opening-hours")
-                description.set("OpenStreetMap opening hours schema parser and generator")
-                url.set("https://github.com/westnordost/osm-opening-hours")
-                licenses {
-                    license {
-                        name.set("MIT License")
-                        url.set("https://raw.githubusercontent.com/westnordost/osm-opening-hours/master/LICENSE.txt")
-                    }
-                }
-                issueManagement {
-                    system.set("GitHub")
-                    url.set("https://github.com/westnordost/osm-opening-hours/issues")
-                }
-                scm {
-                    connection.set("https://github.com/westnordost/osm-opening-hours.git")
-                    url.set("https://github.com/westnordost/osm-opening-hours")
-                }
-                developers {
-                    developer {
-                        id.set("westnordost")
-                        name.set("Tobias Zwick")
-                        email.set("osm@westnordost.de")
-                    }
-                }
+    signAllPublications()
+
+    coordinates(group.toString(), rootProject.name, version.toString())
+
+    pom {
+        name = "osm-opening-hours"
+        description = "OpenStreetMap opening hours schema parser and generator"
+        inceptionYear = "2024"
+        url = "https://github.com/westnordost/osm-opening-hours"
+        licenses {
+            license {
+                name = "MIT License"
+                url = "https://raw.githubusercontent.com/westnordost/osm-opening-hours/master/LICENSE.txt"
+            }
+        }
+        issueManagement {
+            system = "GitHub"
+            url = "https://github.com/westnordost/osm-opening-hours/issues"
+        }
+        scm {
+            connection = "https://github.com/westnordost/osm-opening-hours.git"
+            url = "https://github.com/westnordost/osm-opening-hours"
+            developerConnection = connection
+        }
+        developers {
+            developer {
+                id = "westnordost"
+                name = "Tobias Zwick"
+                email = "osm@westnordost.de"
             }
         }
     }
-    repositories {
-        maven {
-            name = "oss"
-            url = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
-            credentials {
-                val ossrhUsername: String by project
-                val ossrhPassword: String by project
-                username = ossrhUsername
-                password = ossrhPassword
-            }
-        }
-    }
-}
-
-signing {
-    sign(publishing.publications)
-}
-
-// FIXME - workaround for https://github.com/gradle/gradle/issues/26091
-val signingTasks = tasks.withType<Sign>()
-tasks.withType<AbstractPublishToMaven>().configureEach {
-    mustRunAfter(signingTasks)
 }
