@@ -8,16 +8,16 @@ A Kotlin multiplatform library to parse OpenStreetMap opening hours from a strin
 - It is pure Kotlin, no dependencies
 
 
-- It mostly follows the OpenStreetMap [opening hours specification](https://wiki.openstreetmap.org/wiki/Key:opening_hours/specification). For details and remarks, 
+- It mostly follows the OpenStreetMap [opening hours specification](https://wiki.openstreetmap.org/wiki/Key:opening_hours/specification). For details and remarks,
   see the section [Specification](#Specification).
   As of Feb 2025, 96.49% of opening hours strings in the wild are considered valid, 99.11% are understood.
 
 
-- The data model is type-safe, i.e. it is not possible to create an invalid opening hours string 
+- The data model is type-safe, i.e. it is not possible to create an invalid opening hours string
   from the data model
 
 
-- It is very fast. Expect one order of magnitude faster than other opening hours syntax parsers, 
+- It is very fast. Expect one order of magnitude faster than other opening hours syntax parsers,
   e.g. it parses the average opening hours string about 10x as fast as the Java [OpeningHoursParser](https://github.com/simonpoole/OpeningHoursParser).
 
   See [`src/jvmTest/kotlin/tasks/print_statistics/PrintStatistics.kt`](src/jvmTest/kotlin/tasks/print_statistics/PrintStatistics.kt) for the script that measures it.
@@ -33,7 +33,7 @@ It is currently used in [StreetComplete](https://github.com/streetcomplete/stree
 
 # Usage
 
-Add [de.westnordost:osm-opening-hours:0.2.0](https://mvnrepository.com/artifact/de.westnordost/osm-opening-hours/0.2.0) as a Maven dependency or download the jar from there.
+Add [de.westnordost:osm-opening-hours:0.3.0](https://mvnrepository.com/artifact/de.westnordost/osm-opening-hours/0.3.0) as a Maven dependency or download the jar from there.
 
 
 Usage e.g.
@@ -53,23 +53,23 @@ additions/remarks:
 - **Whitespaces**: e.g. `Jan05Mo-Fr08:00`
 
   The specification does not comprehensively define where and how many spaces are allowed
-  or required in-between the tokens. So, we assume that any number (including none) of them are 
+  or required in-between the tokens. So, we assume that any number (including none) of them are
   allowed and only required in places where two successive tokens use the same set of characters
-  (e.g. `week05␣05:00`, `Su␣sunset`, `Jan05:␣05:00`). Other parsers consider the lack of spaces 
+  (e.g. `week05␣05:00`, `Su␣sunset`, `Jan05:␣05:00`). Other parsers consider the lack of spaces
   valid too, though the canonical form always contains spaces in-between for clarity and readability.
 
 - **More restrictive date ranges within month**: e.g. `easter+Su-09-We +3 days` considered invalid
-  
+
   The specification allows for an unnecessarily complex syntax for dates and syntax that doesn't
-  make sense (and is therefore not used). So dates are parsed in a slightly more strict way 
+  make sense (and is therefore not used). So dates are parsed in a slightly more strict way
   according to the rules as described in [this comment](https://wiki.openstreetmap.org/wiki/Talk:Key:opening_hours/specification#Simplify_months_and_dates_selector_(disallow_syntax_variations_on_within-month-ranges_that_make_no_sense)).
 
 
 ## Lenient parsing
 
 Beyond what is considered valid according to the specification and the mentioned remarks,
-the following unambiguous syntax variations are understood by the parser if instructed to be 
-lenient: 
+the following unambiguous syntax variations are understood by the parser if instructed to be
+lenient:
 
 #### Generally
 
@@ -99,7 +99,7 @@ lenient:
 
 #### Months / Dates / Weeks
 
-- multiple month day dates separated by comma (e.g. `Dec 25,31`, `Dec 25-27,31`) 
+- multiple month day dates separated by comma (e.g. `Dec 25,31`, `Dec 25-27,31`)
 - non-abbreviated months (e.g. `December`)
 - a dot directly after a month abbreviation (e.g. `Dec.`)
 - single digits for month day numbers (e.g. `Jan 5`)
@@ -111,5 +111,5 @@ val hours = "October to Dec.: Sun,PH,Thu: 8 am — 12h30 pm; WEEK1 24/7"
     .toOpeningHours(lenient = true)
 ```
 
-When (re-)creating the string from the data model, of course always a valid opening hours string is 
+When (re-)creating the string from the data model, of course always a valid opening hours string is
 returned.
