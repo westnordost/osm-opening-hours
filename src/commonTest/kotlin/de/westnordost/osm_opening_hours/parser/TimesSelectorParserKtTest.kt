@@ -144,6 +144,8 @@ class TimesSelectorParserKtTest {
         assertEquals(null, parseClockTime("08"))
         assertEquals(null, parseClockTime("08h"))
         assertEquals(null, parseClockTime("08."))
+        assertEquals(null, parseClockTime("08時"))
+        assertEquals(null, parseClockTime("08時30"))
     }
 
     @Test fun parseClockTime_lenient() {
@@ -160,6 +162,9 @@ class TimesSelectorParserKtTest {
         assertEquals(ClockTime(8, 0), parseClockTime("8 h", true))
         assertEquals(ClockTime(12, 0), parseClockTime("12H", true))
         assertEquals(ClockTime(8, 0), parseClockTime("8h", true))
+        assertEquals(ClockTime(8, 0), parseClockTime("08時", true))
+        assertEquals(ClockTime(8, 30), parseClockTime("08時30", true))
+        assertEquals(ClockTime(8, 30), parseClockTime("08時30分", true))
 
         assertEquals(ClockTime(8, 0), parseClockTime("8 am", true))
         assertEquals(ClockTime(8, 0), parseClockTime("8 a.m.", true))

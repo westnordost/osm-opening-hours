@@ -87,8 +87,8 @@ lenient:
 #### Times
 
 - times in the 12-hour clock notation (e.g `12:30AM`, `08:00 p.m.`, `12:00 pm`, `08:00 ㏂`)
-- only the hour is specified (e.g `12 AM`, `16`, `14h`)
-- `h`, `：` and `.` as minutes separators (e.g `12 h 30`, `8h15am`, `08.00`, `8：30`)
+- only the hour is specified (e.g `12 AM`, `16`, `14h`, `13時`)
+- `h`, `：`, `時` and `.` as minutes separators (e.g `12 h 30`, `8h15am`, `08.00`, `8：30`, `１２時４５分`)
 - single digits for hours (e.g `8:30`)
 - understand 24/7 as denoting 00:00-24:00 (e.g. `Fr-Su 24/7`)
 

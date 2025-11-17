@@ -133,13 +133,17 @@ private fun StringWithCursor.parseHourMinutesLenient(
 
     if (allowWhitespacesAroundMinuteSeparator) skipWhitespaces(true)
     val minuteSeparator = nextIsAndAdvance {
-        it == ':' || it == '.' || it.equals('h', ignoreCase = true) || it == '：'
+        it == ':' ||
+        it == '.' ||
+        it.equals('h', ignoreCase = true) ||
+        it == '：' ||
+        it == '時' // similar to 'h' but in Chinese/Japanese
     }
     var minutesStr: String? = null
     if (minuteSeparator != null) {
         if (allowWhitespacesAroundMinuteSeparator) skipWhitespaces(true)
         minutesStr = nextNumberAndAdvance(true, 2)
-        if (minutesStr == null && !minuteSeparator.equals('h', ignoreCase = true) ||
+        if (minutesStr == null && !minuteSeparator.equals('h', ignoreCase = true) && minuteSeparator != '時' ||
             minutesStr != null && minutesStr.length != 2
         ) {
             cursor = initial
@@ -147,6 +151,8 @@ private fun StringWithCursor.parseHourMinutesLenient(
         }
         skipWhitespaces(true)
     }
+    // ignore this character ("minutes") after minutes
+    if (minutesStr != null) nextIsAndAdvance('分')
 
     var hour = hourStr.toInt()
     val clock12 = parseAmPm()
