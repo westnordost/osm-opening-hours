@@ -75,6 +75,7 @@ lenient:
 
 - case is ignored (e.g. `MO-FR`, `WEEK 01`, `Easter`...)
 - en dashes, em dashes, `~`, `〜` and ` to ` can be used for ranges (e.g. `08:00—12:00`, `Mo to Fr`)
+- full-width colon `：` wherever a colon is expected
 - any [unicode whitespace](https://en.wikipedia.org/wiki/Whitespace_character) instead of only the normal space allowed in-between the tokens
 - rules with "additional" modifier may follow even if previous rule did neither terminate in a time,
   nor has a comment, nor has an explicit selector mode (e.g. `Mo-Th, May-Aug Fr-Sa`).
@@ -85,7 +86,7 @@ lenient:
 
 - times in the 12-hour clock notation (e.g `12:30AM`, `08:00 p.m.`, `12:00 pm`, `08:00 ㏂`)
 - only the hour is specified (e.g `12 AM`, `16`, `14h`)
-- "h" and "." as minutes separators (e.g `12 h 30`, `8h15am`, `08.00`)
+- `h`, `：` and `.` as minutes separators (e.g `12 h 30`, `8h15am`, `08.00`, `8：30`)
 - single digits for hours (e.g `8:30`)
 - understand 24/7 as denoting 00:00-24:00 (e.g. `Fr-Su 24/7`)
 

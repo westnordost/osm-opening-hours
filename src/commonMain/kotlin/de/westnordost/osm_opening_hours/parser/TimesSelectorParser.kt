@@ -133,7 +133,7 @@ private fun StringWithCursor.parseHourMinutesLenient(
 
     if (allowWhitespacesAroundMinuteSeparator) skipWhitespaces(true)
     val minuteSeparator = nextIsAndAdvance {
-        it == ':' || it == '.' || it.equals('h', ignoreCase = true)
+        it == ':' || it == '.' || it.equals('h', ignoreCase = true) || it == '：'
     }
     var minutesStr: String? = null
     if (minuteSeparator != null) {

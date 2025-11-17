@@ -77,6 +77,10 @@ class SelectorParserKtTest {
             parseSelector("Mo:08:00", true)
         )
         assertEquals(
+            Range(weekdays = listOf(Monday), times = listOf(ClockTime(8, 0))),
+            parseSelector("Mo：08：00", true)
+        )
+        assertEquals(
             Range(weekdays = listOf(Monday), times = listOf(ClockTime(0)..ExtendedClockTime(24))),
             parseSelector("Mo24/7", true)
         )

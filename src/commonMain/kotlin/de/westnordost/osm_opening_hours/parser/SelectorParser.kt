@@ -78,7 +78,9 @@ internal fun StringWithCursor.parseSelector(lenient: Boolean): Selector {
             if (!lenient) fail("Did not expect the beginning of a new additional rule here")
         }
 
-        separatorForReadability = nextIsAndAdvance(':')
+        separatorForReadability =
+            (!lenient && nextIsAndAdvance(':'))
+            || (nextIsAndAdvance { it == ':' || it == '：' } != null)
     }
     skipWhitespaces(lenient)
     val (weekdaysAndHolidays, times) = parseWeekdaysAndTimes(lenient)
@@ -125,7 +127,7 @@ private fun StringWithCursor.parseWeekdaysAndTimes(
     var ws = 0
     if (weekdays != null) {
         ws = skipWhitespaces(lenient)
-        if (lenient && nextIsAndAdvance(':')) {
+        if (lenient && nextIsAndAdvance { it == ':' || it == '：' } != null) {
             ws = skipWhitespaces(lenient)
         }
     }
