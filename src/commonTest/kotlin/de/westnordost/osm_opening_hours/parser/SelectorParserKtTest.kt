@@ -37,6 +37,10 @@ class SelectorParserKtTest {
             Range(text = "A", weekdays = listOf(Monday), times = listOf(ClockTime(10, 0))),
             parseSelector("\"A\": Mo:10:00", true)
         )
+        assertEquals(
+            Range(text = "A", weekdays = listOf(Monday), times = listOf(ClockTime(10, 0))),
+            parseSelector("\"A\"： Mo:10:00", true)
+        )
         assertEquals(Range(text = "A"), parseSelector("\"A\":,", true))
     }
 

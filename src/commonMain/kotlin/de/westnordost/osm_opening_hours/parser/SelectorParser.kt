@@ -37,7 +37,10 @@ internal fun StringWithCursor.parseSelector(lenient: Boolean): Selector {
         // a ':' is mandatory when using a comment instead of a wide selector because without
         // it, the comment will actually be the comment within a <rule_modifier>. E.g.
         // "During ramadan": 20:00-22:00      vs     "By appointment only"
-        if (!nextIsAndAdvance(":")) {
+        val nextIsColon =
+            (!lenient && nextIsAndAdvance(':'))
+            || (nextIsAndAdvance { it == ':' || it == '：' } != null)
+        if (!nextIsColon) {
             // since we already advanced, we need to go back
             cursor = initial
             return Range()
