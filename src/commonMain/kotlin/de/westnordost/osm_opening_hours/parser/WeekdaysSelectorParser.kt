@@ -1,7 +1,7 @@
 package de.westnordost.osm_opening_hours.parser
 
 import de.westnordost.osm_opening_hours.model.*
-import de.westnordost.osm_opening_hours.model.Weekday.*
+import kotlin.getValue
 
 internal fun StringWithCursor.parseWeekdaySelector(lenient: Boolean): WeekdaysSelector? {
     val start = parseWeekday(lenient) ?: return null
@@ -89,36 +89,80 @@ private fun StringWithCursor.parseWeekdayStrict(): Weekday? {
     return event
 }
 
-private val lenientWeekdaysMap: Map<String, Weekday> = (
+private val lenientWeekdaysMap: Map<String, Weekday> by lazy {
+    val map = HashMap<String, Weekday>()
+
     // correct 2-letter abbreviations
-    Weekday.entries.associateBy { it.osm } +
-    // full names
-    Weekday.entries.associateBy { it.name } +
-    // three-letter abbreviations
-    mapOf(
-        "Mon" to Monday,
-        "Tue" to Tuesday,
-        "Wed" to Wednesday,
-        "Thu" to Thursday,
-        "Fri" to Friday,
-        "Sat" to Saturday,
-        "Sun" to Sunday,
-    ) +
-    // German 2-letter abbreviations (a common mistake)
-    mapOf(
-        "Mo" to Monday,
-        "Di" to Tuesday,
-        "Mi" to Wednesday,
-        "Do" to Thursday,
-        "Fr" to Friday,
-        "Sa" to Saturday,
-        "So" to Sunday,
+    Weekday.entries.associateByTo(map) { it.osm.lowercase() }
+
+    // full English names
+    Weekday.entries.associateByTo(map) { it.name.lowercase() }
+
+    // NOTE: Since we parse leniently without knowing in which language the
+    // opening hours string was written, accepted abbreviations must be
+    // unambiguous. Even in lenient parsing, the string must be unambiguous.
+    //
+    // E.g. "mar" stands for Tuesday in Spanish. If in another language "mar"
+    // would stand for another weekday, we couldn't accept "mar" in lenient
+    // parsing.
+    //
+    // So, keep that in mind when adding more languages. It is generally less
+    // problematic to add languages from the same family, because it turns out
+    // that the abbreviations for weekdays are often *very* similar in the same
+    // family (or ones that use an own script).
+    //
+    // Languages included are generally the biggest language families with a
+    // focus on those that are actually present in OSM data. It is expected
+    // that these will be mostly where OSM (craft) mappers are most active
+
+    val namesLists = listOf(
+        // west germanic
+        listOf("mo", "di", "mi", "do", "fr", "sa", "so"), // de
+        listOf("ma", "di", "wo", "do", "vr", "za", "zo"), // nl
+        listOf("ma", "di", "wo", "do", "vr", "sa", "so"), // af
+        listOf("mon", "tue", "wed", "thu", "fri", "sat", "sun"), // en
+        // north germanic
+        listOf("man", "tir", "ons", "tor", "fre", "lør", "søn"), // nb (no), da
+        listOf("mån", "tys", "ons", "tor", "fre", "lau", "søn"), // nn (no)
+        listOf("mån", "tis", "ons", "tors", "fre", "lör", "sön"), // sv
+
+        // romance
+        listOf("lun", "mar", "mié", "jue", "vie", "sáb", "dom"), // es
+        listOf("lun", "mar", "mer", "jeu", "ven", "sam", "dim"), // fr
+        listOf("lun", "mar", "mer", "gio", "ven", "sab", "dom"), // it
+        listOf("lun", "mar", "mie", "joi", "vin", "sâm", "dum"), // ro
+        listOf("seg", "ter", "qua", "qui", "sex", "sáb", "dom"), // pt
+
+        // chinese, korean, japanese (short)
+        listOf("月", "火", "水", "木", "金", "土", "日"), // ja
+        listOf("월", "화", "수", "목", "금", "토", "일"), // ko
+        listOf("周一","周二","周三","周四","周五","周六","周日"), // zh
+        // chinese, korean, japanese (full) - still quite short :-)
+        listOf("月曜日", "火曜日", "水曜日", "木曜日", "金曜日", "土曜日", "日曜日"), // ja
+        listOf("월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일"), // ko
+        listOf("星期一", "星期二", "星期三", "星期四", "星期五", "星期六", "星期日"), // zh, yue
+
+        // slavic
+        listOf("пн", "вт", "ср", "чт", "пт", "сб", "вс"), // ru
+        listOf("пн", "вт", "ср", "чт", "пт", "сб", "нд"), // uk
+        listOf("pon", "wt", "śr", "czw", "pt", "sob", "niedz"), // pl
+
+        // arabic, hindi, urdu, bengali, telugu, tamil, persian, indonesian…
+        // not really present in the data / no proper abbreviations
     )
-).mapKeys { it.key.lowercase() }
-private val lenientWeekdaysMaxLength: Int = lenientWeekdaysMap.keys.maxOf { it.length }
+    for (names in namesLists) {
+        for (i in 0 ..< 7) map[names[i]] = Weekday.entries[i]
+    }
+
+    map
+}
+
+private val lenientWeekdaysMaxLength: Int by lazy {
+    lenientWeekdaysMap.keys.maxOf { it.length }
+}
 
 private fun StringWithCursor.parseWeekdayLenient(): Weekday? {
-    val word = getNextKeyword(lenientWeekdaysMaxLength)?.lowercase() ?: return null
+    val word = getNextWord(lenientWeekdaysMaxLength) { it.isLetter() }?.lowercase() ?: return null
     val event = lenientWeekdaysMap[word] ?: return null
     advanceBy(word.length)
     nextIsAndAdvance('.')

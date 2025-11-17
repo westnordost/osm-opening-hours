@@ -91,8 +91,8 @@ lenient:
 
 #### Weekdays / Holidays
 
-- non-abbreviated weekdays, as well as three-character weekdays and German two-letter weekday
-  abbreviations (e.g. `Tuesday`, `Tue`, `Di`...)
+- non-abbreviated weekdays, as well as three-character weekdays and weekday abbreviations in some languages
+  (e.g. `Tuesday`, `Tue`, `Di`, `Mar`, `火`, `星期二`, `вт`…)
 - a dot directly after a weekday abbreviation (e.g. `Mo.`)
 - holidays mixed in weekdays (e.g. `Mo-Sa,PH,Su`)
 - a superfluous ":" after weekdays/holidays (e.g. `Mo-Sa: 08:00-12:00`)
