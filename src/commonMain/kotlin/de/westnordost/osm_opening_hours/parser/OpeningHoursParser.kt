@@ -40,7 +40,7 @@ private fun StringWithCursor.parseOpeningHours(lenient: Boolean): OpeningHours {
             rules.add(parseRule(ruleOperator, lenient))
             skipWhitespaces(lenient)
             if (isAtEnd()) break
-            ruleOperator = parseRuleOperator() ?: fail("Expected rule separator")
+            ruleOperator = parseRuleOperator(lenient) ?: fail("Expected rule separator")
         }
         // don't allow completely empty rules
         if (rules.all { it.isEmpty() }) fail("Only empty rules are not allowed")
@@ -51,11 +51,26 @@ private fun StringWithCursor.parseOpeningHours(lenient: Boolean): OpeningHours {
     }
 }
 
-private fun StringWithCursor.parseRuleOperator(): RuleOperator? {
+private fun StringWithCursor.parseRuleOperator(lenient: Boolean): RuleOperator? =
+    if (lenient) parseRuleOperatorLenient() else parseRuleOperatorStrict()
+
+private fun StringWithCursor.parseRuleOperatorStrict(): RuleOperator? {
     return when {
         nextIsAndAdvance(';') -> RuleOperator.Normal
         nextIsAndAdvance(',') -> RuleOperator.Additional
         nextIsAndAdvance("||") -> RuleOperator.Fallback
+        else -> null
+    }
+}
+
+private fun StringWithCursor.parseRuleOperatorLenient(): RuleOperator? {
+    return when {
+        nextIsAndAdvance { it == ';' || it == '；' } != null ->
+            RuleOperator.Normal
+        nextIsCommaAndAdvance(true) ->
+            RuleOperator.Additional
+        nextIsAndAdvance("||") ->
+            RuleOperator.Fallback
         else -> null
     }
 }

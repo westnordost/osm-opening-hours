@@ -15,12 +15,50 @@ internal fun <T> StringWithCursor.parseCommaSeparated(
         val item = block() ?: break
         list.add(item)
         cursorAfterLastItem = cursor
-        skipWhitespaces(lenient)
-    } while (nextIsAndAdvance(','))
+    } while (nextIsCommaAndAdvance(lenient = lenient, skipWhitespaces = true))
 
     cursor = cursorAfterLastItem
 
     return list.takeIf { it.isNotEmpty() }
+}
+
+/** Returns true if next character is a comma. If lenient, any kind of comma: normal,
+ *  full-width, Chinese comma, ...
+ *  If [skipWhitespaces], the function will also consume any whitespaces in front of the character.*/
+internal fun StringWithCursor.nextIsCommaAndAdvance(lenient: Boolean, skipWhitespaces: Boolean = false): Boolean {
+    val ws = if (skipWhitespaces) skipWhitespaces(lenient) else 0
+
+    val isComma = if (!lenient) {
+        nextIsAndAdvance(',')
+    } else {
+        nextIsAndAdvance { it == ',' || it == '，' || it == '、' || it == '､' || it == '﹑' } != null
+    }
+
+    if (isComma) {
+        return true
+    } else {
+        retreatBy(ws)
+        return false
+    }
+}
+
+/** Returns true if next character is a colon. If lenient, any kind of colon: normal, full-width comma, ...
+ *  If [skipWhitespaces], the function will also consume any whitespaces in front of the character. */
+internal fun StringWithCursor.nextIsColonAndAdvance(lenient: Boolean, skipWhitespaces: Boolean = false): Boolean {
+    val ws = if (skipWhitespaces) skipWhitespaces(lenient) else 0
+
+    val isComma = if (!lenient) {
+        nextIsAndAdvance(':')
+    } else {
+        nextIsAndAdvance { it == ':' || it == '：' } != null
+    }
+
+    if (isComma) {
+        return true
+    } else {
+        retreatBy(ws)
+        return false
+    }
 }
 
 /** Returns true if next character (after whitespaces) is a character indicating a range and
@@ -81,8 +119,11 @@ internal fun StringWithCursor.nextIsAndAdvance(
 /** @return the next string that contains only digits of the given [maxLength]. Returns null if
  *  the number is either longer than that or there is no word at this position. If not null
  *  is returned, will also advance the cursor accordingly */
-internal fun StringWithCursor.nextNumberAndAdvance(maxLength: Int? = null): String? {
-    val number = getNextWord(maxLength) { it in '0'..'9' } ?: return null
+internal fun StringWithCursor.nextNumberAndAdvance(lenient: Boolean, maxLength: Int? = null): String? {
+    val number =
+        if (!lenient) getNextWord(maxLength) { it in '0'..'9' }
+        else getNextWord(maxLength) { it.isDigit() }
+    if (number == null) return null
     advanceBy(number.length)
     return number
 }

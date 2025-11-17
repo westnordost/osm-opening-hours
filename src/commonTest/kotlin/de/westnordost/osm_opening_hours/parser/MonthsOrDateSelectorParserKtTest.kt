@@ -70,6 +70,7 @@ class MonthsOrDateSelectorParserKtTest {
         assertEquals(DatesInMonth(June, MonthDayRange(1, 5)), parse("Jun01—05", true))
         assertEquals(June..July, parse("Jun—Jul", true))
         assertEquals(June..July, parse("Jun〜Jul", true))
+        assertEquals(DatesInMonth(June, MonthDayRange(1, 2)), parse("Jun ０１-０２", true))
     }
 
     @Test fun parseDate() {
@@ -136,6 +137,7 @@ class MonthsOrDateSelectorParserKtTest {
     @Test fun parseDate_lenient() {
         assertEquals(CalendarDate(June, 1), parseDate("Jun 1", true))
         assertEquals(VariableDate(Easter), parseDate("EASTER", true))
+        assertEquals(CalendarDate(June, 1), parseDate("Jun １", true))
     }
 
     @Test fun parseDatesInMonth() {
@@ -163,6 +165,10 @@ class MonthsOrDateSelectorParserKtTest {
         assertEquals(
             DatesInMonth(June, MonthDayRange(1,2), MonthDay(4)),
             parseDatesInMonth("Jun 1-2,4", true)
+        )
+        assertEquals(
+            DatesInMonth(June, MonthDay(1), MonthDay(2)),
+            parseDatesInMonth("Jun １﹑２", true)
         )
     }
 

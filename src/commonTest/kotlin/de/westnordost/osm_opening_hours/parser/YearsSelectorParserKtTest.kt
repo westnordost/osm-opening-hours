@@ -33,6 +33,10 @@ class YearsSelectorParserKtTest {
     }
 
     @Test fun parseYearsSelector_lenient() {
+        assertEquals(Year(1934), parseYearsSelector("١٩٣٤", true))
+        assertEquals(Year(1934), parseYearsSelector("１９３４", true))
+        assertEquals(Year(1934), parseYearsSelector("๑๙๓๔", true))
+
         assertEquals(YearRange(1999, 2000), parseYearsSelector("1999—2000", true))
         assertEquals(YearRange(1999, 2000), parseYearsSelector("1999〜2000", true))
         assertEquals(YearRange(1999, 2000), parseYearsSelector("1999 — 2000", true))

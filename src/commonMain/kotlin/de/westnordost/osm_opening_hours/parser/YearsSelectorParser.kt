@@ -6,7 +6,7 @@ import de.westnordost.osm_opening_hours.model.YearRange
 import de.westnordost.osm_opening_hours.model.YearsSelector
 
 internal fun StringWithCursor.parseYearsSelector(lenient: Boolean): YearsSelector? {
-    val start = nextNumberAndAdvance(4) ?: return null
+    val start = nextNumberAndAdvance(lenient, 4) ?: return null
     // not 4 digits -> not a year. Maybe something else, don't throw an exception and return cursor
     if (start.length != 4) {
         retreatBy(start.length)
@@ -19,12 +19,12 @@ internal fun StringWithCursor.parseYearsSelector(lenient: Boolean): YearsSelecto
 
     if (nextIsRangeAndAdvance(lenient)) {
         skipWhitespaces(lenient)
-        val end = nextNumberAndAdvance(4) ?: fail("Expected an end year")
+        val end = nextNumberAndAdvance(lenient, 4) ?: fail("Expected an end year")
         if (end.length != 4) fail("Expected the end year to consist of 4 digits")
 
         val step = if (nextIsAndAdvance('/', lenient, skipWhitespaces = true)) {
             skipWhitespaces(lenient)
-            nextNumberAndAdvance()?.toInt() ?: fail("Expected a year interval")
+            nextNumberAndAdvance(lenient)?.toInt() ?: fail("Expected a year interval")
         } else null
 
         return YearRange(start.toInt(), end.toInt(), step)

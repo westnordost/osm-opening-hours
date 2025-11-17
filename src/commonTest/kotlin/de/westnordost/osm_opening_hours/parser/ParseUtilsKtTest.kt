@@ -58,13 +58,34 @@ class ParseUtilsKtTest {
         assertEquals(0, x.cursor)
     }
 
+    @Test fun nextIsCommaAndAdvance() {
+        assertEquals(true, StringWithCursor(",").nextIsCommaAndAdvance(false))
+        assertEquals(false, StringWithCursor(" ,").nextIsCommaAndAdvance(false))
+        assertEquals(true, StringWithCursor("   ,").nextIsCommaAndAdvance(false, skipWhitespaces = true))
+        assertEquals(false, StringWithCursor("﹑").nextIsCommaAndAdvance(false))
+        assertEquals(false, StringWithCursor("，").nextIsCommaAndAdvance(false))
+        assertEquals(false, StringWithCursor("､").nextIsCommaAndAdvance(false))
+
+        assertEquals(true, StringWithCursor("﹑").nextIsCommaAndAdvance(true))
+        assertEquals(true, StringWithCursor("，").nextIsCommaAndAdvance(true))
+        assertEquals(true, StringWithCursor("､").nextIsCommaAndAdvance(true))
+    }
+
+    @Test fun nextIsColonAndAdvance() {
+        assertEquals(true, StringWithCursor(":").nextIsColonAndAdvance(false))
+        assertEquals(false, StringWithCursor(" :").nextIsColonAndAdvance(false))
+        assertEquals(true, StringWithCursor("   :").nextIsColonAndAdvance(false, skipWhitespaces = true))
+        assertEquals(false, StringWithCursor("：").nextIsColonAndAdvance(false))
+
+        assertEquals(true, StringWithCursor("：").nextIsColonAndAdvance(true))
+    }
+
     @Test fun nextNumberAndAdvance() {
-        val x = StringWithCursor("09a7")
-        assertEquals(null, x.nextNumberAndAdvance(1))
-        assertEquals("09", x.nextNumberAndAdvance(2))
-        assertEquals(null, x.nextNumberAndAdvance())
-        x.advance()
-        assertEquals("7", x.nextNumberAndAdvance())
+        val x = StringWithCursor("09５7")
+        assertEquals(null, x.nextNumberAndAdvance(false, 1))
+        assertEquals("09", x.nextNumberAndAdvance(false, 2))
+        assertEquals(null, x.nextNumberAndAdvance(false, 2))
+        assertEquals("５7", x.nextNumberAndAdvance(true, 2))
     }
 }
 

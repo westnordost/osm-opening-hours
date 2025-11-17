@@ -5,7 +5,7 @@ import de.westnordost.osm_opening_hours.model.Month.*
 
 internal fun StringWithCursor.parseMonthsOrDatesSelector(lenient: Boolean): MonthsOrDateSelector? {
     val initial = cursor
-    val yearStr = nextNumberAndAdvance(4)
+    val yearStr = nextNumberAndAdvance(lenient, 4)
     // not 4 digits -> not a year. Maybe something else, don't throw an exception and return cursor
     if (yearStr != null) {
         if (yearStr.length != 4) retreatBy(yearStr.length)
@@ -23,7 +23,7 @@ internal fun StringWithCursor.parseMonthsOrDatesSelector(lenient: Boolean): Mont
         }
         if (nextIsRangeAndAdvance(lenient)) {
             skipWhitespaces(lenient)
-            val endYearStr = nextNumberAndAdvance(4)
+            val endYearStr = nextNumberAndAdvance(lenient, 4)
             // not 4 digits -> not a year. Maybe something else, don't throw an exception and return cursor
             if (endYearStr != null) {
                 if (endYearStr.length != 4) retreatBy(endYearStr.length)
@@ -85,7 +85,7 @@ private fun StringWithCursor.parseCalendarDate(
     // Jan 24/7 should also not be interpreted as Jan 24
     // so we need to look ahead first to see if there's a time
     if (nextIsClockTime(lenient) || nextIs(TWENTY_FOUR_SEVEN)) return null
-    val day = nextNumberAndAdvance(2) ?: return null
+    val day = nextNumberAndAdvance(lenient, 2) ?: return null
 
     if (!lenient && day.length != 2) fail("Expected month day to consist of two digits")
 
@@ -118,7 +118,7 @@ private fun StringWithCursor.parseSpecificWeekdayDate(
     skipWhitespaces(lenient)
     val minus = nextIsAndAdvance('-')
     skipWhitespaces(lenient)
-    val nth = nextNumberAndAdvance(1)?.toInt() ?: fail("Expected an nth")
+    val nth = nextNumberAndAdvance(lenient, 1)?.toInt() ?: fail("Expected an nth")
     skipWhitespaces(lenient)
     if (!nextIsAndAdvance(']')) {
         // e.g. "Jun Fr[1,2]" or "Jun Fr[1-3]"
@@ -141,7 +141,7 @@ private fun StringWithCursor.parseSpecificWeekdayDate(
 
 private fun StringWithCursor.nextIsWeekdayOrHolidaySelector(lenient: Boolean): Boolean {
     val initial = cursor
-    if (nextIsAndAdvance(',', lenient = true, skipWhitespaces = true)) {
+    if (nextIsCommaAndAdvance(lenient, skipWhitespaces = true)) {
         skipWhitespaces(lenient)
         if (parseWeekdaySelector(lenient) != null || parseHolidaySelector(lenient) != null) {
             cursor = initial
@@ -186,12 +186,12 @@ internal fun StringWithCursor.parseDatesInMonth(lenient: Boolean, year: Int?): D
 private fun StringWithCursor.parseMonthDaySelector(lenient: Boolean): MonthDaySelector? {
     val initial = cursor
 
-    val day = nextNumberAndAdvance(2) ?: return null
+    val day = nextNumberAndAdvance(lenient, 2) ?: return null
     if (!lenient && day.length != 2) fail("Expected month day to consist of two digits")
 
     if (nextIsRangeAndAdvance(lenient)) {
         skipWhitespaces(lenient)
-        val endDay = nextNumberAndAdvance(2)
+        val endDay = nextNumberAndAdvance(lenient, 2)
         if (endDay == null) {
             cursor = initial
             return null

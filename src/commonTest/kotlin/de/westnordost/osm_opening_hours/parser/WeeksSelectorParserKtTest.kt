@@ -35,6 +35,10 @@ class WeeksSelectorParserKtTest {
         assertEquals(WeekRange(1,5), parseWeeksSelector("01〜05", true))
         assertEquals(WeekRange(1,5), parseWeeksSelector("01 — 05", true))
         assertEquals(WeekRange(1,5), parseWeeksSelector("01 to 05", true))
+
+        assertEquals(Week(12), parseWeeksSelector("١٢", true))
+        assertEquals(Week(12), parseWeeksSelector("１２", true))
+        assertEquals(Week(12), parseWeeksSelector("๑๒", true))
     }
 
     @Test

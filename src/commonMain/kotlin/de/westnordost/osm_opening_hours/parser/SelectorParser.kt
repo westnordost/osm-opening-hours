@@ -5,7 +5,7 @@ import de.westnordost.osm_opening_hours.model.TWENTY_FOUR_SEVEN
 
 internal fun StringWithCursor.parseSelector(lenient: Boolean): Selector {
     if (nextIsAndAdvance(TWENTY_FOUR_SEVEN)) {
-        if (!lenient && nextIsAndAdvance(',', lenient, skipWhitespaces = true)) {
+        if (!lenient && nextIsCommaAndAdvance(lenient, skipWhitespaces = true)) {
             fail("Did not expect the beginning of a new additional rule here")
         }
         return TwentyFourSeven
@@ -14,7 +14,7 @@ internal fun StringWithCursor.parseSelector(lenient: Boolean): Selector {
     // 20% performance improvement: try the most common case first - Weekdays + times
     val (shortcutWeekdaysAndHolidays, shortcutTimes) = parseWeekdaysAndTimes(lenient)
     if (shortcutWeekdaysAndHolidays != null || shortcutTimes != null) {
-        if (!lenient && shortcutTimes == null && nextIsAndAdvance(',', lenient, skipWhitespaces = true)) {
+        if (!lenient && shortcutTimes == null && nextIsCommaAndAdvance(lenient, skipWhitespaces = true)) {
             fail("Did not expect the beginning of a new additional rule here")
         }
         return Range(
@@ -37,10 +37,7 @@ internal fun StringWithCursor.parseSelector(lenient: Boolean): Selector {
         // a ':' is mandatory when using a comment instead of a wide selector because without
         // it, the comment will actually be the comment within a <rule_modifier>. E.g.
         // "During ramadan": 20:00-22:00      vs     "By appointment only"
-        val nextIsColon =
-            (!lenient && nextIsAndAdvance(':'))
-            || (nextIsAndAdvance { it == ':' || it == '：' } != null)
-        if (!nextIsColon) {
+        if (!nextIsColonAndAdvance(lenient)) {
             // since we already advanced, we need to go back
             cursor = initial
             return Range()
@@ -77,13 +74,11 @@ internal fun StringWithCursor.parseSelector(lenient: Boolean): Selector {
         // ch.simonpoole.OpeningHoursParser allow a dangling "," at the end of the wide range
         // selectors. The former does not even correct it for the canonical version! Nevertheless,
         // it is an error, so let's treat it as such in non-lenient mode
-        if (nextIsAndAdvance(',', lenient, skipWhitespaces = true)) {
+        if (nextIsCommaAndAdvance(lenient, skipWhitespaces = true)) {
             if (!lenient) fail("Did not expect the beginning of a new additional rule here")
         }
 
-        separatorForReadability =
-            (!lenient && nextIsAndAdvance(':'))
-            || (nextIsAndAdvance { it == ':' || it == '：' } != null)
+        separatorForReadability = nextIsColonAndAdvance(lenient)
     }
     skipWhitespaces(lenient)
     val (weekdaysAndHolidays, times) = parseWeekdaysAndTimes(lenient)
@@ -94,7 +89,7 @@ internal fun StringWithCursor.parseSelector(lenient: Boolean): Selector {
         separatorForReadability = null
     }
 
-    if (!lenient && times == null && nextIsAndAdvance(',', lenient, skipWhitespaces = true)) {
+    if (!lenient && times == null && nextIsCommaAndAdvance(lenient, skipWhitespaces = true)) {
         fail("Did not expect the beginning of a new additional rule here")
     }
 
@@ -130,7 +125,7 @@ private fun StringWithCursor.parseWeekdaysAndTimes(
     var ws = 0
     if (weekdays != null) {
         ws = skipWhitespaces(lenient)
-        if (lenient && nextIsAndAdvance { it == ':' || it == '：' } != null) {
+        if (lenient && nextIsColonAndAdvance(lenient)) {
             ws = skipWhitespaces(lenient)
         }
     }

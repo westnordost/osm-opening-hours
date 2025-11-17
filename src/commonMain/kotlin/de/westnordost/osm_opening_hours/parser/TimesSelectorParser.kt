@@ -28,7 +28,7 @@ internal fun StringWithCursor.parseTimesSelector(lenient: Boolean): TimesSelecto
 
     val step = if (endTime != null && nextIsAndAdvance('/', lenient, skipWhitespaces = true)) {
         skipWhitespaces(lenient)
-        parseInterval() ?: fail("Expected an interval")
+        parseInterval(lenient) ?: fail("Expected an interval")
     } else null
 
     val openEnd = step == null && nextIsAndAdvance('+', lenient, skipWhitespaces = true)
@@ -45,12 +45,12 @@ internal fun StringWithCursor.parseTimesSelector(lenient: Boolean): TimesSelecto
     }
 }
 
-internal fun StringWithCursor.parseInterval(): Interval? {
-    return parseClockTime(false) ?: parseIntervalMinutes()
+internal fun StringWithCursor.parseInterval(lenient: Boolean): Interval? {
+    return parseClockTime(false) ?: parseIntervalMinutes(lenient)
 }
 
-internal fun StringWithCursor.parseIntervalMinutes(): IntervalMinutes? {
-    val number = nextNumberAndAdvance() ?: return null
+internal fun StringWithCursor.parseIntervalMinutes(lenient: Boolean): IntervalMinutes? {
+    val number = nextNumberAndAdvance(lenient) ?: return null
     return IntervalMinutes(number.toInt())
 }
 
@@ -105,7 +105,7 @@ private fun StringWithCursor.parseHourMinutesStrict(
     allowWhitespacesAroundMinuteSeparator: Boolean
 ): Pair<Int, Int?>? {
     val initial = cursor
-    val hour = nextNumberAndAdvance(2) ?: return null
+    val hour = nextNumberAndAdvance(false, 2) ?: return null
     if (hour.length != 2) {
         cursor = initial
         return null
@@ -116,7 +116,7 @@ private fun StringWithCursor.parseHourMinutesStrict(
         return null
     }
     if (allowWhitespacesAroundMinuteSeparator) skipWhitespaces(false)
-    val minutes = nextNumberAndAdvance(2)
+    val minutes = nextNumberAndAdvance(false, 2)
     if (minutes == null || minutes.length != 2) {
         cursor = initial
         return null
@@ -129,7 +129,7 @@ private fun StringWithCursor.parseHourMinutesLenient(
 ): Pair<Int, Int?>? {
     val initial = cursor
     if (nextIs(TWENTY_FOUR_SEVEN)) return null
-    val hourStr = nextNumberAndAdvance(2) ?: return null
+    val hourStr = nextNumberAndAdvance(true, 2) ?: return null
 
     if (allowWhitespacesAroundMinuteSeparator) skipWhitespaces(true)
     val minuteSeparator = nextIsAndAdvance {
@@ -138,7 +138,7 @@ private fun StringWithCursor.parseHourMinutesLenient(
     var minutesStr: String? = null
     if (minuteSeparator != null) {
         if (allowWhitespacesAroundMinuteSeparator) skipWhitespaces(true)
-        minutesStr = nextNumberAndAdvance(2)
+        minutesStr = nextNumberAndAdvance(true, 2)
         if (minutesStr == null && !minuteSeparator.equals('h', ignoreCase = true) ||
             minutesStr != null && minutesStr.length != 2
         ) {

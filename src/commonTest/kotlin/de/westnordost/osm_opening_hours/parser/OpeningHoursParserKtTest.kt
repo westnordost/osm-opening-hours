@@ -95,6 +95,22 @@ class OpeningHoursParserKtTest {
         )
     }
 
+    @Test fun parseOpeningHours_lenient() {
+        assertEquals(
+            OpeningHours(
+                Rule(Range(times = listOf(ClockTime(18)))),
+                Rule(Range(times = listOf(ClockTime(20))), ruleOperator = RuleOperator.Normal)
+            ),
+            parse("18；20", true)
+        )
+        assertEquals(
+            OpeningHours(
+                Rule(Range(weekdays = listOf(Weekday.Monday), times = listOf(ClockTime(18)))),
+                Rule(Range(weekdays = listOf(Weekday.Tuesday), times = listOf(ClockTime(20))), ruleOperator = RuleOperator.Additional)
+            ),
+            parse("Mo 18，Tu 20", true)
+        )
+    }
 
     @Test fun parseRuleType() {
         assertEquals(RuleType.Open, parseRuleType("open"))

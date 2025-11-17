@@ -73,10 +73,12 @@ lenient:
 
 #### Generally
 
-- case is ignored (e.g. `MO-FR`, `WEEK 01`, `Easter`...)
+- case is ignored (e.g. `MO-FR`, `WEEK 01`, `Easter`…)
 - en dashes, em dashes, `~`, `〜` and ` to ` can be used for ranges (e.g. `08:00—12:00`, `Mo to Fr`)
-- full-width colon `：` wherever a colon is expected
+- full-width characters (`：`, `，`, `；`, `０`, `９`,…) wherever a normal one is expected
+- Chinese `、` enumeration comma and variants
 - any [unicode whitespace](https://en.wikipedia.org/wiki/Whitespace_character) instead of only the normal space allowed in-between the tokens
+- any unicode digit in any language instead of only 0-9
 - rules with "additional" modifier may follow even if previous rule did neither terminate in a time,
   nor has a comment, nor has an explicit selector mode (e.g. `Mo-Th, May-Aug Fr-Sa`).
   [This is normally not allowed](https://wiki.openstreetmap.org/wiki/Key:opening_hours/specification#explain:additional_rule_separator).

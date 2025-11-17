@@ -40,7 +40,7 @@ internal fun StringWithCursor.parseDayOffset(lenient: Boolean): Int? {
         }
     }
     skipWhitespaces(lenient)
-    val days = nextNumberAndAdvance()
+    val days = nextNumberAndAdvance(lenient)
     if (days == null) {
         cursor = initial
         return null
@@ -60,12 +60,12 @@ internal fun StringWithCursor.parseNthSelector(lenient: Boolean): NthSelector {
 
     skipWhitespaces(lenient)
 
-    val start = nextNumberAndAdvance(1)?.toInt() ?: fail("Expected an nth")
+    val start = nextNumberAndAdvance(lenient, 1)?.toInt() ?: fail("Expected an nth")
 
     val end = if (nextIsRangeAndAdvance(lenient)) {
         if (minus) fail("Negative nth not allowed in range")
         skipWhitespaces(lenient)
-        nextNumberAndAdvance(1)?.toInt() ?: fail("Expected an end nth")
+        nextNumberAndAdvance(lenient, 1)?.toInt() ?: fail("Expected an end nth")
     } else null
 
     return when {

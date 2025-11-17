@@ -60,6 +60,10 @@ class TimesSelectorParserKtTest {
         assertEquals(ClockTime(10, 0)..VariableTime(Dusk), parseTimesSelector("10 TO dusk", true))
         assertEquals(ClockTime(10, 0)..VariableTime(Dusk), parseTimesSelector("10—dusk", true))
         assertEquals(ClockTime(10, 30)..VariableTime(Dusk), parseTimesSelector("10：30〜dusk", true))
+
+        assertEquals(ClockTime(12, 34), parseTimesSelector("١٢:٣٤", true))
+        assertEquals(ClockTime(12, 34), parseTimesSelector("１２:３４", true))
+        assertEquals(ClockTime(12, 34), parseTimesSelector("๑๒:๓๔", true))
     }
 
     @Test fun parseInterval() {
@@ -227,9 +231,9 @@ class TimesSelectorParserKtTest {
         verifyConsumption("40:30", false, StringWithCursor::parseExtendedTime)
         verifyConsumption("40", true, StringWithCursor::parseExtendedTime)
 
-        verifyConsumption("123", StringWithCursor::parseIntervalMinutes)
-        verifyConsumption("123", StringWithCursor::parseInterval)
-        verifyConsumption("00:30", StringWithCursor::parseInterval)
+        verifyConsumption("123", false, StringWithCursor::parseIntervalMinutes)
+        verifyConsumption("123", false, StringWithCursor::parseInterval)
+        verifyConsumption("00:30", false, StringWithCursor::parseInterval)
 
         verifyConsumption("00:30", false, StringWithCursor::parseTimesSelector)
         verifyConsumption("dusk", false, StringWithCursor::parseTimesSelector)
@@ -247,8 +251,11 @@ class TimesSelectorParserKtTest {
 }
 
 // convenience shortcuts
-private fun parseIntervalMinutes(s: String) = StringWithCursor(s).parseIntervalMinutes()
-private fun parseInterval(s: String) = StringWithCursor(s).parseInterval()
+private fun parseIntervalMinutes(s: String, lenient: Boolean = false) =
+    StringWithCursor(s).parseIntervalMinutes(lenient)
+
+private fun parseInterval(s: String, lenient: Boolean = false) =
+    StringWithCursor(s).parseInterval(lenient)
 
 private fun parseEventTime(s: String, lenient: Boolean = false) =
     StringWithCursor(s).parseEventTime(lenient)
