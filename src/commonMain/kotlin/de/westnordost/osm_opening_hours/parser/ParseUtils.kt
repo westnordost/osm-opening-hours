@@ -71,8 +71,9 @@ internal fun StringWithCursor.nextIsRangeAndAdvance(lenient: Boolean): Boolean {
         nextIsAndAdvance('-') || // normal minus
         nextIsAndAdvance('–') || // en dash (thousands of usages!)
         nextIsAndAdvance('—') || // em dash
-        nextIsAndAdvance('～') || // wave dash (used in Japanese)
-        nextIsAndAdvance('~') || // probably used instead of wave dash
+        nextIsAndAdvance('〜') || // wave dash (used in Japanese)
+        nextIsAndAdvance('〜') || // full-width tilde, sometimes used instead of the above
+        nextIsAndAdvance('~') || // see above
         ws > 0 && nextIsAndAdvance("to ", true) // (thousands of usages!)
         // not including other languages than English here because usually, there is more wrong
         // with the syntax of the string if they don't even try to write in English
