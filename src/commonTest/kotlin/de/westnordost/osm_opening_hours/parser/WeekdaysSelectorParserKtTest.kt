@@ -43,6 +43,7 @@ class WeekdaysSelectorParserKtTest {
         assertEquals(Weekday.Thursday..Weekday.Friday, parseWeekdaySelector("Th—Fr", true))
         assertEquals(Weekday.Thursday..Weekday.Friday, parseWeekdaySelector("Th.-Fr.", true))
         assertEquals(Weekday.Thursday..Weekday.Friday, parseWeekdaySelector("Th — Fr", true))
+        assertEquals(Weekday.Thursday..Weekday.Friday, parseWeekdaySelector("Th〜Fr", true))
         assertEquals(Weekday.Thursday..Weekday.Friday, parseWeekdaySelector("Th to Fr", true))
     }
 
@@ -79,6 +80,7 @@ class WeekdaysSelectorParserKtTest {
     @Test
     fun parseNthSelector_lenient() {
         assertEquals(NthRange(1, 3), parseNthSelector("1—3", true))
+        assertEquals(NthRange(1, 3), parseNthSelector("1〜3", true))
     }
 
     @Test fun parseWeekday() {

@@ -59,6 +59,7 @@ class TimesSelectorParserKtTest {
         assertEquals(ClockTime(10, 0)..VariableTime(Dusk), parseTimesSelector("10 to dusk", true))
         assertEquals(ClockTime(10, 0)..VariableTime(Dusk), parseTimesSelector("10 TO dusk", true))
         assertEquals(ClockTime(10, 0)..VariableTime(Dusk), parseTimesSelector("10—dusk", true))
+        assertEquals(ClockTime(10, 0)..VariableTime(Dusk), parseTimesSelector("10〜dusk", true))
     }
 
     @Test fun parseInterval() {
@@ -191,7 +192,7 @@ class TimesSelectorParserKtTest {
         assertEquals(null, parseEventTime("Sunset"))
         assertEquals(Sunset, parseEventTime("sunset"))
     }
-    
+
     @Test fun parseEventTime_lenient() {
         assertEquals(Sunset, parseEventTime("Sunset", true))
         assertEquals(Sunset, parseEventTime("sundown", true))

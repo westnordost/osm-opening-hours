@@ -69,6 +69,7 @@ class MonthsOrDateSelectorParserKtTest {
         assertEquals(DatesInMonth(June, MonthDayRange(1, 5)), parse("Jun01-5", true))
         assertEquals(DatesInMonth(June, MonthDayRange(1, 5)), parse("Jun01—05", true))
         assertEquals(June..July, parse("Jun—Jul", true))
+        assertEquals(June..July, parse("Jun〜Jul", true))
     }
 
     @Test fun parseDate() {

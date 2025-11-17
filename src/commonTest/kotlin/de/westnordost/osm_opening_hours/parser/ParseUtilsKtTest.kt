@@ -50,6 +50,8 @@ class ParseUtilsKtTest {
         assertEquals(false, StringWithCursor("to").nextIsRangeAndAdvance(true))
         assertEquals(false, StringWithCursor(" to").nextIsRangeAndAdvance(true))
         assertEquals(true, StringWithCursor(" to ").nextIsRangeAndAdvance(true))
+        assertEquals(true, StringWithCursor("〜").nextIsRangeAndAdvance(true))
+        assertEquals(true, StringWithCursor("~").nextIsRangeAndAdvance(true))
 
         val x = StringWithCursor(" x")
         assertEquals(false, x.nextIsRangeAndAdvance(false))

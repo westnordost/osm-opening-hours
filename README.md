@@ -74,7 +74,7 @@ lenient:
 #### Generally
 
 - case is ignored (e.g. `MO-FR`, `WEEK 01`, `Easter`...)
-- en dashes, em dashes and " to " can be used for ranges (e.g. `08:00—12:00`, `Mo to Fr`)
+- en dashes, em dashes, `~`, `〜` and ` to ` can be used for ranges (e.g. `08:00—12:00`, `Mo to Fr`)
 - any [unicode whitespace](https://en.wikipedia.org/wiki/Whitespace_character) instead of only the normal space allowed in-between the tokens
 - rules with "additional" modifier may follow even if previous rule did neither terminate in a time,
   nor has a comment, nor has an explicit selector mode (e.g. `Mo-Th, May-Aug Fr-Sa`).
