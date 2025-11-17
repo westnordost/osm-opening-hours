@@ -221,28 +221,46 @@ private fun StringWithCursor.parseMonthStrict(): Month? {
     return month
 }
 
-private val lenientMonthsMap: Map<String, Month> = (
+private val lenientMonthsMap: Map<String, Month> by lazy {
+    val map = HashMap<String, Month>()
+
     // correct 3-letter abbreviations
-    Month.entries.associateBy { it.osm } +
-    // full names
-    Month.entries.associateBy { it.name } +
-    // German abbreviations
-    mapOf(
-        "Jan" to January,
-        "Feb" to February,
-        "März" to March,
-        "Apr" to April,
-        "Mai" to May,
-        "Jun" to June,
-        "Jul" to July,
-        "Aug" to August,
-        "Sept" to September,
-        "Okt" to October,
-        "Nov" to November,
-        "Dez" to December
+    Month.entries.associateByTo(map) { it.osm.lowercase() }
+
+    // full English names
+    Month.entries.associateByTo(map) { it.name }
+
+    val namesLists = listOf(
+        // germanic
+        listOf("jan", "feb", "mär", "apr", "mai", "jun", "jul", "aug", "sep", "okt", "nov", "dez"), // de
+        listOf("jan", "feb", "mrt", "apr", "mei", "jun", "jul", "aug", "sep", "okt", "nov", "dec"), // nl
+        listOf("jan", "feb", "mrt", "apr", "mei", "jun", "jul", "aug", "sep", "okt", "nov", "des"), // af
+        listOf("jan", "feb", "mar", "apr", "maj", "jun", "jul", "aug", "sep", "okt", "nov", "dec"), // da
+        listOf("jan", "feb", "mar", "apr", "mai", "jun", "jul", "aug", "sep", "okt", "nov", "des"), // nb
+        listOf("jan", "feb", "mars", "apr", "mai", "juni", "juli", "aug", "sep", "okt", "nov", "des"), // nn
+        listOf("jan", "feb", "mars", "apr", "maj", "juni", "juli", "aug", "sep", "okt", "nov", "dec"), // sv
+
+        // romance
+        listOf("ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sept", "oct", "nov", "dic"), // es
+        listOf("gen", "feb", "mar", "apr", "mag", "giu", "lug", "ago", "set", "ott", "nov", "dic"), // it
+        listOf("ian", "feb", "mar", "apr", "mai", "iun", "iul", "aug", "sept", "oct", "nov", "dec"), // ro
+        listOf("jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"), // pt
+        listOf("janv", "févr", "mars", "avr", "mai", "juin", "juil", "août", "sept", "oct", "nov", "déc"), // fr
+
+        // slavic
+        listOf("янв", "февр", "март", "апр", "май", "июнь", "июль", "авг", "сент", "окт", "нояб", "дек"), // ru
+        listOf("січ", "лют", "бер", "кві", "тра", "чер", "лип", "сер", "вер", "жов", "лис", "гру"), // uk
     )
-).mapKeys { it.key.lowercase() }
-private val lenientMonthsMaxLength: Int = lenientMonthsMap.keys.maxOf { it.length }
+    for (names in namesLists) {
+        for (i in 0 ..< 12) map[names[i]] = Month.entries[i]
+    }
+
+    map
+}
+
+private val lenientMonthsMaxLength: Int by lazy {
+    lenientMonthsMap.keys.maxOf { it.length }
+}
 
 private fun StringWithCursor.parseMonthLenient(): Month? {
     val word = getNextKeyword(lenientMonthsMaxLength)?.lowercase() ?: return null

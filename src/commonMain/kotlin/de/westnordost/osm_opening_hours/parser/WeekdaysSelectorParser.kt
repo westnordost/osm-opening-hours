@@ -100,20 +100,12 @@ private val lenientWeekdaysMap: Map<String, Weekday> by lazy {
 
     // NOTE: Since we parse leniently without knowing in which language the
     // opening hours string was written, accepted abbreviations must be
-    // unambiguous. Even in lenient parsing, the string must be unambiguous.
+    // unambiguous in all languages. Even in lenient parsing, the string must
+    // be unambiguous.
     //
-    // E.g. "mar" stands for Tuesday in Spanish. If in another language "mar"
-    // would stand for another weekday, we couldn't accept "mar" in lenient
-    // parsing.
-    //
-    // So, keep that in mind when adding more languages. It is generally less
-    // problematic to add languages from the same family, because it turns out
-    // that the abbreviations for weekdays are often *very* similar in the same
-    // family (or ones that use an own script).
-    //
-    // Languages included are generally the biggest language families with a
-    // focus on those that are actually present in OSM data. It is expected
-    // that these will be mostly where OSM (craft) mappers are most active
+    // E.g. "mar" stands for Tuesday in Spanish, but also for "March" in
+    // English (and Spanish, too!). So, we can't accept "mar" as an
+    // abbreviation for Tuesday.
 
     val namesLists = listOf(
         // west germanic
@@ -121,16 +113,15 @@ private val lenientWeekdaysMap: Map<String, Weekday> by lazy {
         listOf("ma", "di", "wo", "do", "vr", "za", "zo"), // nl
         listOf("ma", "di", "wo", "do", "vr", "sa", "so"), // af
         listOf("mon", "tue", "wed", "thu", "fri", "sat", "sun"), // en
-        // north germanic
         listOf("man", "tir", "ons", "tor", "fre", "lør", "søn"), // nb (no), da
         listOf("mån", "tys", "ons", "tor", "fre", "lau", "søn"), // nn (no)
         listOf("mån", "tis", "ons", "tors", "fre", "lör", "sön"), // sv
 
-        // romance
-        listOf("lun", "mar", "mié", "jue", "vie", "sáb", "dom"), // es
-        listOf("lun", "mar", "mer", "jeu", "ven", "sam", "dim"), // fr
-        listOf("lun", "mar", "mer", "gio", "ven", "sab", "dom"), // it
-        listOf("lun", "mar", "mie", "joi", "vin", "sâm", "dum"), // ro
+        // romance (see above comment for "tue" instead of "mar")
+        listOf("lun", "tue", "mié", "jue", "vie", "sáb", "dom"), // es
+        listOf("lun", "tue", "mer", "jeu", "ven", "sam", "dim"), // fr
+        listOf("lun", "tue", "mer", "gio", "ven", "sab", "dom"), // it
+        listOf("lun", "tue", "mie", "joi", "vin", "sâm", "dum"), // ro
         listOf("seg", "ter", "qua", "qui", "sex", "sáb", "dom"), // pt
 
         // chinese, korean, japanese (short)
