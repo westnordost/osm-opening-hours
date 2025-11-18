@@ -5,13 +5,11 @@ sealed interface Time : TimePointsSelector, ExtendedTime {
     operator fun rangeTo(end: ExtendedTime) = TimeSpan(this, end)
 }
 
-/** A [hour]:[minutes] time as seen on a 24-hour clock. 24:00 is allowed (=> next day, 0:00), anything above that is
- *  not. */
+/** A [hour]:[minutes] time as seen on a 24-hour clock. */
 data class ClockTime(val hour: Int, val minutes: Int = 0) : Time, Interval {
     init {
         require(hour in 0..24) { "hour must be within 0..24 but was $hour" }
         require(minutes in 0..59)  { "minutes must be within 0..59 but was $minutes" }
-        require(hour < 24 || minutes == 0) { "$hour:$minutes is not a valid time" }
     }
 
     override fun toString() =
@@ -48,13 +46,11 @@ data class TimeOffset(val op: OffsetOp, val offset: ClockTime) {
 sealed interface ExtendedTime
 
 /** A [hour]:[minutes] time as seen on a 48-hour clock. An extended time can be used to denote that a time range extends
- * into the next day, e.g. 18:00-28:00 (open from 18:00 until 4 hours after midnight).
- * 48:00 is allowed (=> day after next day, 0:00), anything above that is not. */
+ * into the next day, e.g. 18:00-28:00 (open from 18:00 until 4 hours after midnight). */
 data class ExtendedClockTime(val hour: Int, val minutes: Int = 0) : ExtendedTime {
     init {
         require(hour in 0..48) { "hour must be within 0..48 but was $hour" }
         require(minutes in 0..59)  { "minutes must be within 0..59 but was $minutes" }
-        require(hour < 48 || minutes == 0) { "$hour:$minutes is not a valid extended time" }
     }
 
     override fun toString() =

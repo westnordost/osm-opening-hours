@@ -11,12 +11,12 @@ import kotlin.test.assertFails
 class ClockTimeTest {
     @Test fun bounds() {
         assertFails { ClockTime(-1, 0) }
-        assertFails { ClockTime(24, 1) }
         assertFails { ClockTime(0, -1) }
         assertFails { ClockTime(0, 60) }
         ClockTime(0, 0)
         ClockTime(23, 59)
         ClockTime(24, 0)
+        ClockTime(24, 59)
     }
 
     @Test fun to_string() {
@@ -56,12 +56,12 @@ class VariableTimeTest {
 class ExtendedClockTimeTest {
     @Test fun bounds() {
         assertFails { ExtendedClockTime(-1, 0) }
-        assertFails { ExtendedClockTime(48, 1) }
         assertFails { ExtendedClockTime(0, -1) }
         assertFails { ExtendedClockTime(0, 60) }
         ExtendedClockTime(0, 0)
         ExtendedClockTime(47, 59)
         ExtendedClockTime(48, 0)
+        ExtendedClockTime(48, 59)
     }
 
     @Test fun to_string() {
