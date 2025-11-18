@@ -17,22 +17,27 @@ sealed interface Time : TimePointsSelector, ExtendedTime {
 
 sealed interface ExtendedTime
 
-/** A [hour]:[minutes] time as seen on a 24-hour clock */
+/** A [hour]:[minutes] time as seen on a 24-hour clock. 24:00 is allowed (=> next day, 0:00), anything above that is
+ *  not. */
 data class ClockTime(val hour: Int, val minutes: Int = 0) : Time, Interval {
     init {
-        require(hour in 0..23) { "hour must be within 0..23 but was $hour" }
+        require(hour in 0..24) { "hour must be within 0..24 but was $hour" }
         require(minutes in 0..59)  { "minutes must be within 0..59 but was $minutes" }
+        require(hour < 24 || minutes == 0) { "$hour:$minutes is not a valid time" }
     }
 
     override fun toString() =
         "${hour.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}"
 }
 
-/** A [hour]:[minutes] time as seen on a 48-hour clock, lol */
+/** A [hour]:[minutes] time as seen on a 48-hour clock. Used to denote that a time range extends into the next day, e.g.
+ * 18:00-28:00 (open from 18:00 until 4 hours after midnight). 48:00 is allowed (=> day after next day, 0:00), anything
+ * above that is not. */
 data class ExtendedClockTime(val hour: Int, val minutes: Int = 0) : ExtendedTime {
     init {
-        require(hour in 0..47) { "hour must be within 0..47 but was $hour" }
+        require(hour in 0..48) { "hour must be within 0..48 but was $hour" }
         require(minutes in 0..59)  { "minutes must be within 0..59 but was $minutes" }
+        require(hour < 48 || minutes == 0) { "$hour:$minutes is not a valid extended time" }
     }
 
     override fun toString() =
