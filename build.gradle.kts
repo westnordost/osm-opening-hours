@@ -71,7 +71,6 @@ kotlin {
         }
         jvmTest {
             dependencies {
-                implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.14")
                 implementation("ch.poole:OpeningHoursParser:0.28.2")
             }
         }
@@ -125,4 +124,11 @@ mavenPublishing {
             }
         }
     }
+}
+
+tasks.register<UpdateOpeningHoursTask>("updateOpeningHours") {
+    targetFiles = listOf(
+        "src/jvmTest/resources/opening_hours_counts.tsv",
+        "src/commonTest/resources/opening_hours_counts.tsv",
+    )
 }
