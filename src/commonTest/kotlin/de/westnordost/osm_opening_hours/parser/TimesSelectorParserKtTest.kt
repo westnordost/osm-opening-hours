@@ -191,6 +191,11 @@ class TimesSelectorParserKtTest {
 
         assertEquals(ClockTime(8), parseClockTime("8 30", true))
 
+        assertEquals(ClockTime(8), parseClockTime("8:0", true))
+        assertEquals(ClockTime(11, 30), parseClockTime("011:030", true))
+
+        assertEquals(ClockTime(8), parseClockTime("8:5", true))
+
         assertEquals(null, parseClockTime("08:", true))
         assertEquals(null, parseClockTime("12:1", true))
     }

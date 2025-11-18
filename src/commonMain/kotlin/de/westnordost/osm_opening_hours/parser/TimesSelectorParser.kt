@@ -96,10 +96,9 @@ internal fun StringWithCursor.parseExtendedClockTime(lenient: Boolean): Extended
 internal fun StringWithCursor.parseHourMinutes(
     lenient: Boolean,
     allowWhitespacesAroundMinuteSeparator: Boolean = true
-): Pair<Int, Int?>? {
-    return if (lenient) parseHourMinutesLenient(allowWhitespacesAroundMinuteSeparator)
-           else parseHourMinutesStrict(allowWhitespacesAroundMinuteSeparator)
-}
+): Pair<Int, Int?>? =
+    if (lenient) parseHourMinutesLenient(allowWhitespacesAroundMinuteSeparator)
+    else parseHourMinutesStrict(allowWhitespacesAroundMinuteSeparator)
 
 private fun StringWithCursor.parseHourMinutesStrict(
     allowWhitespacesAroundMinuteSeparator: Boolean
@@ -129,7 +128,9 @@ private fun StringWithCursor.parseHourMinutesLenient(
 ): Pair<Int, Int?>? {
     val initial = cursor
     if (nextIs(TWENTY_FOUR_SEVEN)) return null
-    val hourStr = nextNumberAndAdvance(true, 2) ?: return null
+    // allow up to three digits (but not four -> ambiguity with year numbers) to allow
+    // unambiguous typos
+    val hourStr = nextNumberAndAdvance(true, 3) ?: return null
 
     if (allowWhitespacesAroundMinuteSeparator) skipWhitespaces(true)
     val minuteSeparator = nextIsAndAdvance {
@@ -139,17 +140,25 @@ private fun StringWithCursor.parseHourMinutesLenient(
         it == '：' ||
         it == '時' // similar to 'h' but in Chinese/Japanese
     }
-    var minutesStr: String? = null
+    val minutesStr: String?
+    // lenient parsing requires a minute separator too (no "1200-1900") because otherwise
+    // it could be ambiguous with year numbers
     if (minuteSeparator != null) {
         if (allowWhitespacesAroundMinuteSeparator) skipWhitespaces(true)
-        minutesStr = nextNumberAndAdvance(true, 2)
-        if (minutesStr == null && !minuteSeparator.equals('h', ignoreCase = true) && minuteSeparator != '時' ||
-            minutesStr != null && minutesStr.length != 2
+        minutesStr = nextNumberAndAdvance(true, 3)
+        if (
+            // don't allow a dangling ":"
+            minutesStr == null && !minuteSeparator.equals('h', ignoreCase = true) && minuteSeparator != '時' ||
+            // only allow anything other than 2 digits in minutes if the first digit is a 0 (e.g. "030", "0")
+            // because e.g. "09:5" can be ambiguous (did he mean "09:50" or "09:05"?)
+            minutesStr != null && minutesStr.length != 2 && minutesStr.first().digitToInt() != 0
         ) {
             cursor = initial
             return null
         }
         skipWhitespaces(true)
+    } else {
+        minutesStr = null
     }
     // ignore this character ("minutes") after minutes
     if (minutesStr != null) nextIsAndAdvance('分')
