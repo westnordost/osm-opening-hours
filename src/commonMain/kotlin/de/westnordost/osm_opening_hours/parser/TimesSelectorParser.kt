@@ -46,7 +46,7 @@ internal fun StringWithCursor.parseTimesSelector(lenient: Boolean): TimesSelecto
 }
 
 internal fun StringWithCursor.parseInterval(lenient: Boolean): Interval? {
-    return parseClockTime(false) ?: parseIntervalMinutes(lenient)
+    return parseOffsetTime(lenient) ?: parseIntervalMinutes(lenient)
 }
 
 internal fun StringWithCursor.parseIntervalMinutes(lenient: Boolean): IntervalMinutes? {
@@ -77,10 +77,15 @@ internal fun StringWithCursor.parseVariableTime(lenient: Boolean): VariableTime?
         else -> fail("Expected '+' or '-'")
     }
     skipWhitespaces(lenient)
-    val offsetTime = parseClockTime(false) ?: fail("Expected an offset time")
+    val offsetTime = parseOffsetTime(lenient) ?: fail("Expected an offset time")
     skipWhitespaces(lenient)
     if (!nextIsAndAdvance(')')) fail("Expected a ')'")
     return VariableTime(eventTime, TimeOffset(op, offsetTime))
+}
+
+internal fun StringWithCursor.parseOffsetTime(lenient: Boolean): ClockTime? {
+    val (hour, minutes) = parseHourMinutes(lenient, allowAmPm = false) ?: return null
+    return ClockTime(hour, minutes ?: 0)
 }
 
 internal fun StringWithCursor.parseClockTime(lenient: Boolean): ClockTime? {
@@ -95,9 +100,10 @@ internal fun StringWithCursor.parseExtendedClockTime(lenient: Boolean): Extended
 
 internal fun StringWithCursor.parseHourMinutes(
     lenient: Boolean,
-    allowWhitespacesAroundMinuteSeparator: Boolean = true
+    allowWhitespacesAroundMinuteSeparator: Boolean = true,
+    allowAmPm: Boolean = true,
 ): Pair<Int, Int?>? =
-    if (lenient) parseHourMinutesLenient(allowWhitespacesAroundMinuteSeparator)
+    if (lenient) parseHourMinutesLenient(allowWhitespacesAroundMinuteSeparator, allowAmPm)
     else parseHourMinutesStrict(allowWhitespacesAroundMinuteSeparator)
 
 private fun StringWithCursor.parseHourMinutesStrict(
@@ -124,7 +130,8 @@ private fun StringWithCursor.parseHourMinutesStrict(
 }
 
 private fun StringWithCursor.parseHourMinutesLenient(
-    allowWhitespacesAroundMinuteSeparator: Boolean
+    allowWhitespacesAroundMinuteSeparator: Boolean,
+    allowAmPm: Boolean,
 ): Pair<Int, Int?>? {
     val initial = cursor
     if (nextIs(TWENTY_FOUR_SEVEN)) return null
@@ -164,12 +171,14 @@ private fun StringWithCursor.parseHourMinutesLenient(
     if (minutesStr != null) nextIsAndAdvance('分')
 
     var hour = hourStr.toInt()
-    val clock12 = parseAmPm()
-    if (clock12 != null && hour <= 12) {
-        val isPm = clock12 == Clock12.PM
-        when (hour) {
-            12 -> hour = if (isPm) 12 else 0 // special handling for 12 AM / 12 PM
-            else -> if (isPm) hour += 12
+    if (allowAmPm) {
+        val clock12 = parseAmPm()
+        if (clock12 != null && hour <= 12) {
+            val isPm = clock12 == Clock12.PM
+            when (hour) {
+                12 -> hour = if (isPm) 12 else 0 // special handling for 12 AM / 12 PM
+                else -> if (isPm) hour += 12
+            }
         }
     }
     retreatWhitespaces(true)

@@ -228,7 +228,7 @@ private val lenientMonthsMap: Map<String, Month> by lazy {
     Month.entries.associateByTo(map) { it.osm.lowercase() }
 
     // full English names
-    Month.entries.associateByTo(map) { it.name }
+    Month.entries.associateByTo(map) { it.name.lowercase() }
 
     val namesLists = listOf(
         // germanic

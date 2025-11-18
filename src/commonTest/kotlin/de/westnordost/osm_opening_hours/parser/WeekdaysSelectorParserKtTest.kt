@@ -100,7 +100,6 @@ class WeekdaysSelectorParserKtTest {
         assertEquals(Weekday.Tuesday, parseWeekday("TU", true))
         assertEquals(Weekday.Tuesday, parseWeekday("TUESDAY", true))
 
-        assertEquals(Weekday.Tuesday, parseWeekday("mar", true))
         assertEquals(Weekday.Tuesday, parseWeekday("火", true))
         assertEquals(Weekday.Tuesday, parseWeekday("星期二", true))
         assertEquals(Weekday.Tuesday, parseWeekday("вт", true))

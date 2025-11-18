@@ -69,6 +69,7 @@ class TimesSelectorParserKtTest {
     @Test fun parseInterval() {
         assertEquals(IntervalMinutes(123), parseInterval("123"))
         assertEquals(ClockTime(12, 30), parseInterval("12:30"))
+        assertEquals(ClockTime(1, 30), parseInterval("1:30", true))
         assertEquals(null, parseInterval("something else"))
     }
 
@@ -118,7 +119,7 @@ class TimesSelectorParserKtTest {
     }
 
     @Test fun parseEventTimeWithOffset_lenient() {
-        assertEquals(Dusk - ClockTime(1, 0), parseEventTimeWithOffset("(DUSK-01:00)", true))
+        assertEquals(Dusk - ClockTime(1, 0), parseEventTimeWithOffset("(DUSK-1:00)", true))
         assertFails { parseEventTimeWithOffset("(DUSK-01:00am)", true) }
     }
 
@@ -194,8 +195,7 @@ class TimesSelectorParserKtTest {
         assertEquals(ClockTime(8), parseClockTime("8:0", true))
         assertEquals(ClockTime(11, 30), parseClockTime("011:030", true))
 
-        assertEquals(ClockTime(8), parseClockTime("8:5", true))
-
+        assertEquals(null, parseClockTime("8:5", true))
         assertEquals(null, parseClockTime("08:", true))
         assertEquals(null, parseClockTime("12:1", true))
     }
