@@ -65,13 +65,31 @@ internal fun StringWithCursor.parseVariableTime(lenient: Boolean): VariableTime?
 }
 
 internal fun StringWithCursor.parseClockTime(lenient: Boolean): ClockTime? {
-    val (hour, minutes) = parseHourMinutes(lenient) ?: return null
-    return ClockTime(hour, minutes ?: 0)
+    val (hourStr, minutesStr) = parseHourMinutes(lenient) ?: return null
+    val hour = hourStr.toInt()
+    val minutes = minutesStr?.toInt() ?: 0
+
+    if (lenient) {
+        skipWhitespaces(lenient)
+        val clock12 = parseAmPm()
+        retreatWhitespaces(lenient)
+        if (clock12 != null && hour <= 12) {
+            val isPm = clock12 == Clock12.PM
+            val newHour = when (hour) {
+                12 -> if (isPm) 12 else 0 // special handling for 12 AM / 12 PM
+                else -> if (isPm) hour + 12 else hour
+            }
+            return ClockTime(newHour, minutes)
+        }
+    }
+    return ClockTime(hour, minutes)
 }
 
 internal fun StringWithCursor.parseExtendedClockTime(lenient: Boolean): ExtendedClockTime? {
-    val (hour, minutes) = parseHourMinutes(lenient) ?: return null
-    return ExtendedClockTime(hour, minutes ?: 0)
+    val (hourStr, minutesStr) = parseHourMinutes(lenient) ?: return null
+    val hour = hourStr.toInt()
+    val minutes = minutesStr?.toInt() ?: 0
+    return ExtendedClockTime(hour, minutes)
 }
 
 internal fun StringWithCursor.parseEventTime(lenient: Boolean): EventTime? {
@@ -95,14 +113,13 @@ private fun StringWithCursor.parseEventTimeStrict(): EventTime? {
 internal fun StringWithCursor.parseHourMinutes(
     lenient: Boolean,
     allowWhitespacesAroundMinuteSeparator: Boolean = true,
-    allowAmPm: Boolean = true,
-): Pair<Int, Int?>? =
-    if (lenient) parseHourMinutesLenient(allowWhitespacesAroundMinuteSeparator, allowAmPm)
+): Pair<String, String?>? =
+    if (lenient) parseHourMinutesLenient(allowWhitespacesAroundMinuteSeparator)
     else parseHourMinutesStrict(allowWhitespacesAroundMinuteSeparator)
 
 private fun StringWithCursor.parseHourMinutesStrict(
     allowWhitespacesAroundMinuteSeparator: Boolean
-): Pair<Int, Int?>? {
+): Pair<String, String>? {
     val initial = cursor
     val hour = nextNumberAndAdvance(false, 2) ?: return null
     if (hour.length != 2) {
@@ -120,66 +137,61 @@ private fun StringWithCursor.parseHourMinutesStrict(
         cursor = initial
         return null
     }
-    return Pair(hour.toInt(), minutes.toInt())
+    return Pair(hour, minutes)
 }
 
 private fun StringWithCursor.parseHourMinutesLenient(
-    allowWhitespacesAroundMinuteSeparator: Boolean,
-    allowAmPm: Boolean,
-): Pair<Int, Int?>? {
-    val initial = cursor
+    allowWhitespacesAroundMinuteSeparator: Boolean
+): Pair<String, String?>? {
     if (nextIs(TWENTY_FOUR_SEVEN)) return null
-    // allow up to three digits (but not four -> ambiguity with year numbers) to allow
-    // unambiguous typos
+
+    val initial = cursor
+    // allow up to three digits (but not four -> ambiguity with year numbers) to allow unambiguous typos
     val hourStr = nextNumberAndAdvance(true, 3) ?: return null
 
     if (allowWhitespacesAroundMinuteSeparator) skipWhitespaces(true)
-    val minuteSeparator = nextIsAndAdvance {
-        it == ':' ||
-            it == '.' ||
-            it.equals('h', ignoreCase = true) ||
-            it == '：' ||
-            it == '時' // similar to 'h' but in Chinese/Japanese
-    }
+
+    // a character that denotes the end of the hours (e.g. 12h), without implying that minutes will follow
+    val hasHoursEndChar =
+        nextIsAndAdvance { it == 'h' || it == 'H' || it == '時' } != null
+
+    val hasHoursMinutesSeparator =
+        !hasHoursEndChar && nextIsAndAdvance { it == ':' || it == '.' || it == '：' } != null
+
     val minutesStr: String?
-    // lenient parsing requires a minute separator too (no "1200-1900") because otherwise
-    // it could be ambiguous with year numbers
-    if (minuteSeparator != null) {
+    // lenient parsing requires a minute separator, too, because otherwise
+    // it could be ambiguous with year numbers ("2000" <-> "20:00")
+    if (hasHoursEndChar || hasHoursMinutesSeparator) {
         if (allowWhitespacesAroundMinuteSeparator) skipWhitespaces(true)
         minutesStr = nextNumberAndAdvance(true, 3)
         if (
-        // don't allow a dangling ":"
-            minutesStr == null && !minuteSeparator.equals('h', ignoreCase = true) && minuteSeparator != '時' ||
-            // only allow anything other than 2 digits in minutes if the first digit is a 0 (e.g. "030", "0")
-            // because e.g. "09:5" can be ambiguous (did he mean "09:50" or "09:05"?)
+            // don't allow a dangling ":"
+            minutesStr == null && !hasHoursEndChar ||
+            // only allow anything other than 2 digits in minutes if the first digit is a 0
+            // (e.g. "030", "0") because e.g. "09:5" can be ambiguous (was "09:50" or "09:05" meant?)
             minutesStr != null && minutesStr.length != 2 && minutesStr.first().digitToInt() != 0
         ) {
             cursor = initial
             return null
         }
-        skipWhitespaces(true)
     } else {
         minutesStr = null
     }
     // ignore this character ("minutes") after minutes
-    if (minutesStr != null) nextIsAndAdvance('分')
-
-    var hour = hourStr.toInt()
-    if (allowAmPm) {
-        val clock12 = parseAmPm()
-        if (clock12 != null && hour <= 12) {
-            val isPm = clock12 == Clock12.PM
-            when (hour) {
-                12 -> hour = if (isPm) 12 else 0 // special handling for 12 AM / 12 PM
-                else -> if (isPm) hour += 12
-            }
-        }
+    if (minutesStr != null) {
+        skipWhitespaces(true)
+        nextIsAndAdvance('分')
     }
     retreatWhitespaces(true)
 
-    return Pair(hour, minutesStr?.toInt())
-}
+    // minutes not considered as missing if "hours end" character has been used. This is important
+    // for parsing intervals: Compare "11-18/2" and "11-18/2h". The former 2 should be interpreted
+    // as interval in minutes but *could* be understood as hours (which would be wrong, of course),
+    // the latter is not ambiguous.
+    val minutesStr2 = minutesStr ?: if (hasHoursEndChar) "00" else null
 
+    return Pair(hourStr, minutesStr2)
+}
 
 internal enum class Clock12 { AM, PM }
 internal fun StringWithCursor.parseAmPm(): Clock12? {

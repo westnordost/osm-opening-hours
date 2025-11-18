@@ -54,6 +54,10 @@ class TimesSelectorParserKtTest {
     @Test fun parseTimesSelector_lenient() {
         assertEquals(ClockTime(23, 30), parseTimesSelector("11:30 PM", true))
         assertEquals(VariableTime(Dusk), parseTimesSelector("DUSK", true))
+        assertEquals(
+            TimeSpan(VariableTime(Sunrise), VariableTime(Sunset)),
+            parseTimesSelector("SUNUP - SUNDOWN", true)
+        )
         assertEquals(Dusk - ClockTime(1, 0), parseTimesSelector("(DUSK-01:00)", true))
         assertEquals(StartingAtTime(ClockTime(12, 30)), parseTimesSelector("12h30+", true))
         assertEquals(ClockTime(10, 0)..VariableTime(Dusk), parseTimesSelector("10 to dusk", true))
@@ -61,9 +65,18 @@ class TimesSelectorParserKtTest {
         assertEquals(ClockTime(10, 0)..VariableTime(Dusk), parseTimesSelector("10—dusk", true))
         assertEquals(ClockTime(10, 30)..VariableTime(Dusk), parseTimesSelector("10：30〜dusk", true))
 
-        assertEquals(ClockTime(12, 34), parseTimesSelector("١٢:٣٤", true))
-        assertEquals(ClockTime(12, 34), parseTimesSelector("１２:３４", true))
-        assertEquals(ClockTime(12, 34), parseTimesSelector("๑๒:๓๔", true))
+        assertEquals(
+            TimeIntervals(VariableTime(Dusk), VariableTime(Dawn), IntervalMinutes(10)),
+            parseTimesSelector("dusk-dawn / 10", true)
+        )
+        assertEquals(
+            TimeIntervals(VariableTime(Dusk), VariableTime(Dawn), ClockTime(0, 10)),
+            parseTimesSelector("dusk-dawn / 0:010", true)
+        )
+        assertEquals(
+            TimeIntervals(VariableTime(Dusk), VariableTime(Dawn), ClockTime(2,0)),
+            parseTimesSelector("dusk-dawn / 2h", true)
+        )
     }
 
     @Test fun parseInterval() {

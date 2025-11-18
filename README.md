@@ -88,7 +88,8 @@ lenient:
 
 - times in the 12-hour clock notation (e.g `12:30AM`, `08:00 p.m.`, `12:00 pm`, `08:00 ㏂`)
 - only the hour is specified (e.g `12 AM`, `16`, `14h`, `13時`)
-- `h`, `.`, `時` and  as minutes separators (e.g `12 h 30`, `8h15am`, `08.00`, `8：30`, `１２時４５分`)
+- `h`, `.` and `時` as minutes separators (e.g `12 h 30`, `8h15am`, `08.00`, `8：30`, `１２時４５分`)
+- intervals like `dusk-dawn/2h` resolve to `dusk-dawn/02:00` (i.e. every 2 hours)
 - single digits for hours (e.g `8:30`) or up to three digits for hours and minutes as long as the first digit is a zero (e.g. `011:030`) - a common typo
 - understand 24/7 as denoting 00:00-24:00 (e.g. `Fr-Su 24/7`)
 

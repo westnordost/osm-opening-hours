@@ -133,6 +133,10 @@ class TimeParserKtTest {
         assertEquals(null, parseClockTime("8:5", true))
         assertEquals(null, parseClockTime("08:", true))
         assertEquals(null, parseClockTime("12:1", true))
+
+        assertEquals(ClockTime(12, 34), parseClockTime("١٢:٣٤", true))
+        assertEquals(ClockTime(12, 34), parseClockTime("１２:３４", true))
+        assertEquals(ClockTime(12, 34), parseClockTime("๑๒:๓๔", true))
     }
 
     @Test fun parseEventTime() {
