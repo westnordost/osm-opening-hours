@@ -7,16 +7,20 @@ import de.westnordost.osm_opening_hours.model.EventTime.*
 private val eventTimeMap: Map<String, EventTime> = EventTime.entries.associateBy { it.osm }
 private val eventTimeMaxLength: Int = eventTimeMap.keys.maxOf { it.length }
 
-private val lenientEventTimeMap: Map<String, EventTime> = (
+private val lenientEventTimeMap: Map<String, EventTime> by lazy {
+    val map = HashMap<String, EventTime>()
+
     // correct entries
-    EventTime.entries.associateBy { it.osm } +
+    EventTime.entries.associateByTo(map) { it.osm.lowercase() }
     // synonyms
-    mapOf(
-        "sundown" to Sunset,
-        "sunup" to Sunrise
-    )
-).mapKeys { it.key.lowercase() }
-private val lenientEventTimeMaxLength: Int = lenientEventTimeMap.keys.maxOf { it.length }
+    map["sundown"] = Sunset
+    map["sunup"] = Sunrise
+
+    map
+}
+private val lenientEventTimeMaxLength: Int by lazy {
+    lenientEventTimeMap.keys.maxOf { it.length }
+}
 
 internal fun StringWithCursor.parseTimesSelector(lenient: Boolean): TimesSelector? {
     val startTime = parseTime(lenient) ?: return null
