@@ -47,9 +47,9 @@ data class TimeOffset(val op: OffsetOp, val offset: ClockTime) {
 
 sealed interface ExtendedTime
 
-/** A [hour]:[minutes] time as seen on a 48-hour clock. Used to denote that a time range extends into the next day, e.g.
- * 18:00-28:00 (open from 18:00 until 4 hours after midnight). 48:00 is allowed (=> day after next day, 0:00), anything
- * above that is not. */
+/** A [hour]:[minutes] time as seen on a 48-hour clock. An extended time can be used to denote that a time range extends
+ * into the next day, e.g. 18:00-28:00 (open from 18:00 until 4 hours after midnight).
+ * 48:00 is allowed (=> day after next day, 0:00), anything above that is not. */
 data class ExtendedClockTime(val hour: Int, val minutes: Int = 0) : ExtendedTime {
     init {
         require(hour in 0..48) { "hour must be within 0..48 but was $hour" }

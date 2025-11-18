@@ -77,6 +77,11 @@ class TimesSelectorParserKtTest {
             TimeIntervals(VariableTime(Dusk), VariableTime(Dawn), ClockTime(2,0)),
             parseTimesSelector("dusk-dawn / 2h", true)
         )
+
+        assertEquals(
+            ClockTime(1, 0)..ExtendedClockTime(21, 0),
+            parseTimesSelector("1am-9pm", true)
+        )
     }
 
     @Test fun parseInterval() {

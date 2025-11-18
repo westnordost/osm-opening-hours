@@ -64,10 +64,38 @@ internal fun StringWithCursor.parseVariableTime(lenient: Boolean): VariableTime?
     return VariableTime(eventTime, TimeOffset(op, offsetTime))
 }
 
+internal fun StringWithCursor.parseEventTime(lenient: Boolean): EventTime? {
+    return if (lenient) parseEventTimeLenient() else parseEventTimeStrict()
+}
+
+internal fun StringWithCursor.parseEventTimeLenient(): EventTime? {
+    val word = getNextWord(lenientEventTimeMaxLength) { it.isLetter() }?.lowercase() ?: return null
+    val event = lenientEventTimeMap[word] ?: return null
+    advanceBy(word.length)
+    return event
+}
+
+private fun StringWithCursor.parseEventTimeStrict(): EventTime? {
+    val word = getNextKeyword(eventTimeMaxLength) ?: return null
+    val event = eventTimeMap[word] ?: return null
+    advanceBy(word.length)
+    return event
+}
+
 internal fun StringWithCursor.parseClockTime(lenient: Boolean): ClockTime? {
+    val (hour, minutes) = parseClock(lenient) ?: return null
+    return ClockTime(hour, minutes ?: 0)
+}
+
+internal fun StringWithCursor.parseExtendedClockTime(lenient: Boolean): ExtendedClockTime? {
+    val (hour, minutes) = parseClock(lenient) ?: return null
+    return ExtendedClockTime(hour, minutes ?: 0)
+}
+
+private fun StringWithCursor.parseClock(lenient: Boolean): Pair<Int, Int?>? {
     val (hourStr, minutesStr) = parseHourMinutes(lenient) ?: return null
     val hour = hourStr.toInt()
-    val minutes = minutesStr?.toInt() ?: 0
+    val minutes = minutesStr?.toInt()
 
     if (lenient) {
         skipWhitespaces(lenient)
@@ -79,35 +107,10 @@ internal fun StringWithCursor.parseClockTime(lenient: Boolean): ClockTime? {
                 12 -> if (isPm) 12 else 0 // special handling for 12 AM / 12 PM
                 else -> if (isPm) hour + 12 else hour
             }
-            return ClockTime(newHour, minutes)
+            return Pair(newHour, minutes)
         }
     }
-    return ClockTime(hour, minutes)
-}
-
-internal fun StringWithCursor.parseExtendedClockTime(lenient: Boolean): ExtendedClockTime? {
-    val (hourStr, minutesStr) = parseHourMinutes(lenient) ?: return null
-    val hour = hourStr.toInt()
-    val minutes = minutesStr?.toInt() ?: 0
-    return ExtendedClockTime(hour, minutes)
-}
-
-internal fun StringWithCursor.parseEventTime(lenient: Boolean): EventTime? {
-    return if (lenient) parseEventTimeLenient() else parseEventTimeStrict()
-}
-
-internal fun StringWithCursor.parseEventTimeLenient(): EventTime? {
-    val word = getNextKeyword(lenientEventTimeMaxLength)?.lowercase() ?: return null
-    val event = lenientEventTimeMap[word] ?: return null
-    advanceBy(word.length)
-    return event
-}
-
-private fun StringWithCursor.parseEventTimeStrict(): EventTime? {
-    val word = getNextKeyword(eventTimeMaxLength) ?: return null
-    val event = eventTimeMap[word] ?: return null
-    advanceBy(word.length)
-    return event
+    return Pair(hour, minutes)
 }
 
 internal fun StringWithCursor.parseHourMinutes(
