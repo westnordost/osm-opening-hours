@@ -31,7 +31,13 @@ internal fun StringWithCursor.nextIsCommaAndAdvance(lenient: Boolean, skipWhites
     val isComma = if (!lenient) {
         nextIsAndAdvance(',')
     } else {
-        nextIsAndAdvance { it == ',' || it == '，' || it == '、' || it == '､' || it == '﹑' } != null
+        nextIsAndAdvance {
+            it == ',' || // normal comma
+            it == '，' || // full-width comma
+            it == '、' || // chinese enumeration comma
+            it == '､' || // half-width chinese enumeration comma
+            it == '﹑'   // some other variant of above
+        } != null
     }
 
     if (isComma) {
@@ -68,16 +74,17 @@ internal fun StringWithCursor.nextIsRangeAndAdvance(lenient: Boolean): Boolean {
     val isRange = if (!lenient) {
         nextIsAndAdvance('-')
     } else {
-        nextIsAndAdvance('-') || // normal minus
-        nextIsAndAdvance('–') || // en dash (thousands of usages!)
-        nextIsAndAdvance('—') || // em dash
-        nextIsAndAdvance('〜') || // wave dash (used in Japanese)
-        nextIsAndAdvance('〜') || // full-width tilde, sometimes used instead of the above
-        nextIsAndAdvance('~') || // see above
+        nextIsAndAdvance {
+            it == '-' || // normal minus
+            it == '–' || // en dash (thousands of usages!)
+            it == '—' || // em dash
+            it == '〜' || // wave dash (used in Japanese)
+            it == '〜' || // full-width tilde, sometimes used instead of the above
+            it == '~'    // see above
+        } != null ||
         ws > 0 && nextIsAndAdvance("to ", true) // (thousands of usages!)
-        // not including other languages than English here because usually, there is more wrong
-        // with the syntax of the string if they don't even try to write in English
     }
+
     if (isRange) {
         return true
     } else {

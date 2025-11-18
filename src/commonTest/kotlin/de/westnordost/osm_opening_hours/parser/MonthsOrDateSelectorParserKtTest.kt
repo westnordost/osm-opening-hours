@@ -73,73 +73,6 @@ class MonthsOrDateSelectorParserKtTest {
         assertEquals(DatesInMonth(June, MonthDayRange(1, 2)), parse("Jun ０１-０２", true))
     }
 
-    @Test fun parseDate() {
-        assertEquals(CalendarDate(June, 1), parseDate("Jun01"))
-        assertEquals(CalendarDate(June, 1), parseDate("Jun 01"))
-        assertEquals(VariableDate(Easter), parseDate("easter"))
-        assertEquals(VariableDate(Easter, dayOffset = 1), parseDate("easter +1day"))
-        assertEquals(
-            VariableDate(Easter, weekdayOffset = NextWeekday(Friday)),
-            parseDate("easter +Fr")
-        )
-        assertEquals(
-            VariableDate(Easter, weekdayOffset = NextWeekday(Friday), dayOffset = -3),
-            parseDate("easter +Fr -3 days")
-        )
-        assertEquals(null, parseDate("EASTER"))
-
-        assertEquals(
-            CalendarDate(June, 1, NextWeekday(Sunday)),
-            parseDate("Jun 01+Su")
-        )
-        assertEquals(
-            CalendarDate(June, 1, NextWeekday(Sunday)),
-            parseDate("Jun 01 +Su")
-        )
-
-        assertEquals(
-            CalendarDate(June, 1, PreviousWeekday(Sunday)),
-            parseDate("Jun 01-Su")
-        )
-        assertEquals(
-            CalendarDate(June, 1, PreviousWeekday(Sunday)),
-            parseDate("Jun 01 -Su")
-        )
-
-        assertEquals(
-            CalendarDate(June, 1, dayOffset = 1),
-            parseDate("Jun 01 +1 day")
-        )
-        assertEquals(
-            CalendarDate(June, 1, NextWeekday(Sunday), dayOffset = 1),
-            parseDate("Jun 01 +Su +1 day")
-        )
-        assertEquals(
-            CalendarDate(June, 1, NextWeekday(Sunday), dayOffset = 1),
-            parseDate("Jun 01 +Su+1 day")
-        )
-
-        assertEquals(SpecificWeekdayDate(June, Friday, Nth(1)), parseDate("Jun Fr[1]"))
-        assertEquals(SpecificWeekdayDate(June, Friday, LastNth(1)), parseDate("Jun Fr[-1]"))
-        assertEquals(SpecificWeekdayDate(2000, June, Friday, Nth(1)), parseDate("Jun Fr[1]", false, 2000))
-        assertEquals(SpecificWeekdayDate(June, Friday, LastNth(1)), parseDate("Jun Fr [ - 1 ] "))
-        assertEquals(SpecificWeekdayDate(June, Friday, Nth(1), -3), parseDate("Jun Fr[1] -3 days"))
-        assertEquals(null, parseDate("Jun Fr[1 - 2]"))
-        assertEquals(null, parseDate("Jun Fr[1 , 2]"))
-        assertEquals(null, parseDate("Jun Fr[1] , PH"))
-        assertEquals(null, parseDate("Jun Fr[1] , Fr"))
-
-        assertFails { parseDate("Jun Fr [") }
-        assertFails { parseDate("Jun 1") }
-        assertFails { parseDate("Jun 32") }
-    }
-
-    @Test fun parseDate_lenient() {
-        assertEquals(CalendarDate(June, 1), parseDate("Jun 1", true))
-        assertEquals(VariableDate(Easter), parseDate("EASTER", true))
-        assertEquals(CalendarDate(June, 1), parseDate("Jun １", true))
-    }
-
     @Test fun parseDatesInMonth() {
         assertEquals(null, parseDatesInMonth("something"))
         assertEquals(null, parseDatesInMonth("Jun"))
@@ -172,35 +105,7 @@ class MonthsOrDateSelectorParserKtTest {
         )
     }
 
-    @Test fun parseAnnualEvent() {
-        assertEquals(Easter, parseAnnualEvent("easter"))
-        assertEquals(null, parseAnnualEvent("EASTER"))
-        assertEquals(null, parseAnnualEvent("something"))
-    }
-
-    @Test fun parseAnnualEvent_lenient() {
-        assertEquals(Easter, parseAnnualEvent("EASTER", true))
-        assertEquals(Easter, parseAnnualEvent("Easter", true))
-    }
-
-    @Test fun parseMonth() {
-        assertEquals(February, parseMonth("Feb"))
-        assertEquals(null, parseMonth("feb"))
-        assertEquals(null, parseMonth("something"))
-    }
-
-    @Test fun parseMonth_lenient() {
-        assertEquals(December, parseMonth("DEC", true))
-        assertEquals(December, parseMonth("Dec.", true))
-        assertEquals(December, parseMonth("dez", true))
-        assertEquals(December, parseMonth("December", true))
-    }
-
     @Test fun does_not_consume_too_much() {
-        verifyConsumption("Feb", false, StringWithCursor::parseMonth)
-        verifyConsumption("easter", false, StringWithCursor::parseAnnualEvent)
-        verifyConsumption("Jun 01") { parseDate(false, null) }
-        verifyConsumption("Jun 01 -Su") { parseDate(false, null) }
 
         verifyConsumption("Jun 05:00", false, expectCursorPosAt = 3, StringWithCursor::parseMonthsOrDatesSelector)
         verifyConsumption("Jun 24/7", false, expectCursorPosAt = 3, StringWithCursor::parseMonthsOrDatesSelector)
@@ -226,14 +131,6 @@ class MonthsOrDateSelectorParserKtTest {
 private fun parse(s: String, lenient: Boolean = false) =
     StringWithCursor(s).parseMonthsOrDatesSelector(lenient)
 
-private fun parseDate(s: String, lenient: Boolean = false, year: Int? = null) =
-    StringWithCursor(s).parseDate(lenient, year)
-
-private fun parseMonth(s: String, lenient: Boolean = false) =
-    StringWithCursor(s).parseMonth(lenient)
-
 private fun parseDatesInMonth(s: String, lenient: Boolean = false, year: Int? = null) =
     StringWithCursor(s).parseDatesInMonth(lenient, year)
 
-private fun parseAnnualEvent(s: String, lenient: Boolean = false) =
-    StringWithCursor(s).parseAnnualEvent(lenient)

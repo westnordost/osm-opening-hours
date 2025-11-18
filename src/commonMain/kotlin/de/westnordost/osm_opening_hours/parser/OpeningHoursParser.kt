@@ -65,7 +65,10 @@ private fun StringWithCursor.parseRuleOperatorStrict(): RuleOperator? {
 
 private fun StringWithCursor.parseRuleOperatorLenient(): RuleOperator? {
     return when {
-        nextIsAndAdvance { it == ';' || it == '；' } != null ->
+        nextIsAndAdvance {
+            it == ';' || // normal semicolon
+            it == '；'   // full-width semicolon
+        } != null ->
             RuleOperator.Normal
         nextIsCommaAndAdvance(true) ->
             RuleOperator.Additional

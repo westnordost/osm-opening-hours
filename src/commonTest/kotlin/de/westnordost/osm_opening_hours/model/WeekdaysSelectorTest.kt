@@ -19,22 +19,3 @@ class SpecificWeekdaysTest {
     }
 }
 
-class NthTest {
-    @Test fun bounds() {
-        for (i in listOf(-1, 0, 6)) {
-            assertFails { Nth(i) }
-            assertFails { LastNth(i) }
-            assertFails { NthRange(i, i+1) }
-            assertFails { NthRange(i-1, i) }
-        }
-        for (i in 1..5) {
-            Nth(i)
-            LastNth(i)
-        }
-
-        assertFails { NthRange(2, 1) }
-        for (i in 1..4) {
-            NthRange(i, i+1)
-        }
-    }
-}

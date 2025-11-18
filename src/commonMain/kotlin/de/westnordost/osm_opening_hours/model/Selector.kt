@@ -29,6 +29,9 @@ data object TwentyFourSeven : Selector {
  * If [isRestrictedByHolidays] is `true`, it means its only those weekdays *on* the given holidays,
  * e.g. Mondays that are school holidays. If `false`, it's on those weekdays
  * and holidays, e.g. Sundays and public holidays.
+ *
+ * If [useSeparatorForReadability] is true, a colon is placed between year/month/weeks/text selector and weekdays/times
+ * selector.
  * */
 data class Range(
     val years: List<YearsSelector>? = null,

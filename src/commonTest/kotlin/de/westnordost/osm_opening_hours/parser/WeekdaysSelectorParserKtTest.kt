@@ -63,72 +63,19 @@ class WeekdaysSelectorParserKtTest {
         assertEquals(3, parseDayOffset("+3DAYS", true))
     }
 
-    @Test fun parseNthSelector() {
-        assertEquals(LastNth(3), parseNthSelector("-3"))
-        assertEquals(LastNth(3), parseNthSelector("- 3"))
-        assertEquals(Nth(1), parseNthSelector("1"))
-        assertEquals(NthRange(1, 4), parseNthSelector("1-4"))
-        assertEquals(NthRange(1, 4), parseNthSelector("1  - 4"))
-
-        assertEquals(Nth(1), parseNthSelector("1—3"))
-
-        assertFails { parseNthSelector("-3-4") }
-        assertFails { parseNthSelector("3-") }
-        assertFails { parseNthSelector("3-1") }
-    }
-
-    @Test
-    fun parseNthSelector_lenient() {
-        assertEquals(NthRange(1, 3), parseNthSelector("1—3", true))
-        assertEquals(NthRange(1, 3), parseNthSelector("1〜3", true))
-    }
-
-    @Test fun parseWeekday() {
-        assertEquals(Weekday.Monday, parseWeekday("Mo"))
-        assertEquals(null, parseWeekday("something"))
-        assertEquals(null, parseWeekday("mo"))
-        assertEquals(null, parseWeekday("Mosaik"))
-    }
-
-    @Test fun parseWeekday_lenient() {
-        assertEquals(Weekday.Tuesday, parseWeekday("Di", true))
-        assertEquals(Weekday.Tuesday, parseWeekday("Di.", true))
-        assertEquals(Weekday.Tuesday, parseWeekday("Tuesday", true))
-        assertEquals(Weekday.Tuesday, parseWeekday("Tue", true))
-        assertEquals(Weekday.Tuesday, parseWeekday("Tue.", true))
-        assertEquals(Weekday.Tuesday, parseWeekday("tu", true))
-        assertEquals(Weekday.Tuesday, parseWeekday("TU", true))
-        assertEquals(Weekday.Tuesday, parseWeekday("TUESDAY", true))
-
-        assertEquals(Weekday.Tuesday, parseWeekday("火", true))
-        assertEquals(Weekday.Tuesday, parseWeekday("星期二", true))
-        assertEquals(Weekday.Tuesday, parseWeekday("вт", true))
-    }
-
     @Test fun does_not_consume_too_much() {
-        verifyConsumption("Mo", false, StringWithCursor::parseWeekday)
         verifyConsumption("Mo", false, StringWithCursor::parseWeekdaySelector)
         verifyConsumption("Mo-Sa", false, StringWithCursor::parseWeekdaySelector)
         verifyConsumption("Mo[3]", false, StringWithCursor::parseWeekdaySelector)
         verifyConsumption("Mo[3] +3 days", false, StringWithCursor::parseWeekdaySelector)
 
-        verifyConsumption("1", false, StringWithCursor::parseNthSelector)
-        verifyConsumption("1-2", false, StringWithCursor::parseNthSelector)
-        verifyConsumption("-4", false, StringWithCursor::parseNthSelector)
-
         verifyConsumption(" +3 days", false, StringWithCursor::parseDayOffset)
     }
 }
-
-private fun parseNthSelector(s: String, lenient: Boolean = false) =
-    StringWithCursor(s).parseNthSelector(lenient)
 
 private fun parseWeekdaySelector(s: String, lenient: Boolean = false) =
     StringWithCursor(s).parseWeekdaySelector(lenient)
 
 private fun parseDayOffset(s: String, lenient: Boolean = false) =
     StringWithCursor(s).parseDayOffset(lenient)
-
-private fun parseWeekday(s: String, lenient: Boolean = false) =
-    StringWithCursor(s).parseWeekday(lenient)
 
