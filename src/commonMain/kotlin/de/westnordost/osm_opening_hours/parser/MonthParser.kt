@@ -69,7 +69,7 @@ private fun StringWithCursor.parseMonthStrict(): Month? {
 }
 
 private fun StringWithCursor.parseMonthLenient(): Month? {
-    val word = getNextKeyword(lenientMonthsMaxLength)?.lowercase() ?: return null
+    val word = getNextWord(lenientMonthsMaxLength) { it.isLetter() }?.lowercase() ?: return null
     val event = lenientMonthsMap[word] ?: return null
     advanceBy(word.length)
     nextIsAndAdvance('.')
