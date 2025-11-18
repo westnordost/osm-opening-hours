@@ -67,11 +67,13 @@ kotlin {
         commonTest {
             dependencies {
                 implementation(kotlin("test"))
+                api("org.jetbrains.kotlinx:kotlinx-io-core:0.8.0")
             }
         }
         jvmTest {
             dependencies {
                 implementation("ch.poole:OpeningHoursParser:0.28.2")
+                implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.14")
             }
         }
     }
