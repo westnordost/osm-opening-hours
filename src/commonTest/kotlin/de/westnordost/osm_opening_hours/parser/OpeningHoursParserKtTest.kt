@@ -132,6 +132,17 @@ class OpeningHoursParserKtTest {
             ),
             parse("Mo 18，Tu 20", true)
         )
+
+        assertEquals(
+            OpeningHours(Rule(
+                Range(
+                    months = listOf(CalendarDate(Month.June, 24)),
+                    times = listOf(ClockTime(0,0)..ExtendedClockTime(24,0)),
+                    useSeparatorForReadability = true
+                )
+            )),
+            parse("Jun24:24/7", true)
+        )
     }
 
     @Test fun parseRuleType() {
