@@ -43,8 +43,9 @@ internal fun StringWithCursor.parseIntervalMinutes(lenient: Boolean): IntervalMi
 internal fun StringWithCursor.parseOffsetTime(lenient: Boolean): ClockTime? {
     val initial = cursor
     val (hourStr, minutesStr) = parseHourMinutes(lenient) ?: return null
-    // for offset time, minutes must be specified because otherwise it would be ambiguous with
-    // IntervalMinutes ("12:00-18:00/5" could otherwise be interpreted as "12:00-18:00/5:00")
+    // for offset time, minutes must be specified also in lenient mode because otherwise it would
+    // be ambiguous with IntervalMinutes ("12:00-18:00/5" could otherwise be interpreted as
+    // "12:00-18:00/5:00")
     if (minutesStr == null) {
         cursor = initial
         return null
