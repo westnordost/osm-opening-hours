@@ -64,9 +64,3 @@ data class TimeSpan(
 data class StartingAtTime(val start: Time) : TimeSpansSelector {
     override fun toString() = "$start+"
 }
-
-enum class OffsetOp(val s: String) {
-    Plus("+"), Minus("-");
-
-    override fun toString() = s
-}

@@ -29,6 +29,12 @@ enum class EventTime(internal val osm: String) {
     operator fun minus(offset: ClockTime) = VariableTime(this, TimeOffset(OffsetOp.Minus, offset))
 }
 
+enum class OffsetOp(val s: String) {
+    Plus("+"), Minus("-");
+
+    override fun toString() = s
+}
+
 /** The time of a daily event (e.g. sunrise) plus/minus an offset (e.g. 1 hour after sunrise) */
 data class VariableTime(
     val dailyEvent: EventTime,
