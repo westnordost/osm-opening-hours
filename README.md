@@ -10,7 +10,7 @@ A Kotlin multiplatform library to parse OpenStreetMap opening hours from a strin
 
 - It mostly follows the OpenStreetMap [opening hours specification](https://wiki.openstreetmap.org/wiki/Key:opening_hours/specification). For details and remarks,
   see the section [Specification](#Specification).
-  As of Feb 2025, 96.49% of opening hours strings in the wild are considered valid, 99.11% are understood.
+  As of Nov 2025, 96.60% of opening hours strings in the wild are considered valid, 99.13% are understood.
 
 
 - The data model is type-safe, i.e. it is not possible to create an invalid opening hours string
