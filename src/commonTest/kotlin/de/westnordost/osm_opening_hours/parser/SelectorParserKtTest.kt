@@ -199,6 +199,10 @@ class SelectorParserKtTest {
             Range(years = listOf(Year(1999)), weeks = listOf(Week(12)), useSeparatorForReadability = true),
             parseSelector("1999 week12 :", true)
         )
+        assertEquals(
+            Range(weeks = listOf(Week(11), WeekRange(12, 14))),
+            parseSelector("week 11, week 12-14", true)
+        )
     }
 
     @Test fun parseSelector_Range_wideRange_weekdays() {

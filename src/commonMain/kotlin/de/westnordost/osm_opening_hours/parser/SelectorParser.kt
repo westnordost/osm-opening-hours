@@ -59,14 +59,26 @@ internal fun StringWithCursor.parseSelector(lenient: Boolean): Selector {
             firstMonth?.hasYear() == false &&
             (otherMonths.isEmpty() || otherMonths.any { it.hasYear() })
             ) {
-            months?.set(0, firstMonth.inYear(singleYear.year))
+            months[0] = firstMonth.inYear(singleYear.year)
             years = null
         }
 
         skipWhitespaces(lenient)
         if (nextIsAndAdvance(WEEK, ignoreCase = lenient)) {
+            val first = booleanArrayOf(true)
             skipWhitespaces(lenient)
-            weeks = parseCommaSeparated(lenient) { parseWeeksSelector(lenient) }
+            weeks = parseCommaSeparated(lenient) {
+                // not in the spec, but both the reference implementation and
+                // ch.simonpoole.OpeningHoursParser allow "week" to be repeated before each
+                // weeks selector
+                if (!first[0] && lenient) {
+                    if (nextIsAndAdvance(WEEK, ignoreCase = lenient)) {
+                        skipWhitespaces(lenient)
+                    }
+                }
+                first[0] = false
+                parseWeeksSelector(lenient)
+            }
             skipWhitespaces(lenient)
         }
         skipWhitespaces(lenient)

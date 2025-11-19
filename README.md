@@ -90,7 +90,7 @@ lenient:
 - only the hour is specified (e.g `12 AM`, `16`, `14h`, `13時`)
 - `h`, `.` and `時` as minutes separators (e.g `12 h 30`, `8h15am`, `08.00`, `8：30`, `１２時４５分`)
 - intervals like `dusk-dawn/2h` resolve to `dusk-dawn/02:00` (i.e. every 2 hours)
-- single digits for hours (e.g `8:30`) or up to three digits for hours and minutes as long as the first digit is a zero (e.g. `011:030`) - a common typo
+- single digits for hours (e.g `8:30`) or too many leading zeroes (e.g. `011:030`)
 - understand 24/7 as denoting 00:00-24:00 (e.g. `Fr-Su 24/7`)
 
 #### Weekdays / Holidays
@@ -99,7 +99,7 @@ lenient:
   (e.g. `Tuesday`, `Tue`, `Di`, `Mar`, `火`, `星期二`, `вт`…)
 - a dot directly after a weekday abbreviation (e.g. `Mo.`)
 - holidays mixed in weekdays (e.g. `Mo-Sa,PH,Su`)
-- a superfluous ":" after weekdays/holidays (e.g. `Mo-Sa: 08:00-12:00`)
+- a superfluous colon after weekdays/holidays (e.g. `Mo-Sa: 08:00-12:00`)
 
 #### Months / Dates / Weeks
 
@@ -108,6 +108,7 @@ lenient:
 - a dot directly after a month abbreviation (e.g. `Dec.`)
 - single digits for month day numbers (e.g. `Jan 5`)
 - single digits for week numbers (e.g. `week 1-9`)
+- when the `week` keyword is repeated for each range (e.g. `week 1-9, week 40-52` instead of `week 1-9,40-52`)
 
 Usage e.g.
 ```kotlin
