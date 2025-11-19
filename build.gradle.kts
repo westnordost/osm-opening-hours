@@ -130,7 +130,7 @@ mavenPublishing {
 
 tasks.register<UpdateOpeningHoursTask>("updateOpeningHours") {
     targetFiles = listOf(
-        "src/jvmTest/resources/opening_hours_counts.tsv",
+        "src/jvmTest/resources/opening_hours_counts_jvm.tsv",
         "src/commonTest/resources/opening_hours_counts.tsv",
     )
 }
