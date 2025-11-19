@@ -179,6 +179,11 @@ class SelectorParserKtTest {
                 weeks = listOf(Week(12), Week(13))),
             parseSelector("1999 , 2000 Jul , easter , Aug 05 week 12 , 13 ")
         )
+
+        // not allowed in the spec
+        assertFails {
+            parseSelector("2000 Jul - 2001 Aug")
+        }
     }
 
     @Test fun parseSelector_Range_years_months_weeks_lenient() {
