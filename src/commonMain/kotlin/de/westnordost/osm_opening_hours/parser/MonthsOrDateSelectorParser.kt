@@ -54,6 +54,15 @@ internal fun StringWithCursor.parseDatesInMonth(lenient: Boolean, year: Int?): D
     val initial = cursor
     val month = parseMonth(lenient) ?: return null
     skipWhitespaces(lenient)
+
+    // Jan 05:00-08:00 should not be interpreted as Jan 05: 00:00-08:00
+    // Jan 24/7 should also not be interpreted as Jan 24
+    // so we need to look ahead first to see if there's a time
+    if (nextIsHoursMinutes(lenient) || nextIs(TWENTY_FOUR_SEVEN)) {
+        cursor = initial
+        return null
+    }
+
     val monthDays = parseCommaSeparated(lenient) { parseMonthDaySelector(lenient) }
     if (monthDays == null || monthDays.singleOrNull() is MonthDay) {
         // that's just a normal calendar date (and maybe something else following)!

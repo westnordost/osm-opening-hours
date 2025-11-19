@@ -82,10 +82,10 @@ private fun StringWithCursor.parseSpecificWeekdayDate(
 private fun StringWithCursor.parseCalendarDate(
     lenient: Boolean, year: Int?, month: Month
 ): CalendarDate? {
-    // Jan 05:00-8:00 should not be interpreted as Jan 05: 00:00-08:00
+    // Jan 05:00-08:00 should not be interpreted as Jan 05: 00:00-08:00
     // Jan 24/7 should also not be interpreted as Jan 24
     // so we need to look ahead first to see if there's a time
-    if (nextIsClockTime(lenient) || nextIs(TWENTY_FOUR_SEVEN)) return null
+    if (nextIsHoursMinutes(lenient) || nextIs(TWENTY_FOUR_SEVEN)) return null
     val day = nextNumberAndAdvance(lenient, 2) ?: return null
 
     if (!lenient && day.length != 2) fail("Expected month day to consist of two digits")
@@ -111,16 +111,6 @@ private fun StringWithCursor.parseWeekdayOffset(lenient: Boolean): WeekdayOffset
     }
     return if (isPositive) NextWeekday(weekday) else PreviousWeekday(weekday)
 }
-
-private fun StringWithCursor.nextIsClockTime(lenient: Boolean): Boolean {
-    val initial = cursor
-    val (_, minutes) = parseHourMinutes(lenient, allowWhitespacesAroundMinuteSeparator = false)
-        ?: return false
-    cursor = initial
-    // only if hours + minutes are defined
-    return minutes != null
-}
-
 
 private fun StringWithCursor.nextIsWeekdayOrHolidaySelector(lenient: Boolean): Boolean {
     val initial = cursor

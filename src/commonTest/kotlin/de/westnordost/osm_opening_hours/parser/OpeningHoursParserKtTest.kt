@@ -93,6 +93,28 @@ class OpeningHoursParserKtTest {
             )),
             parse("18:00closed\"yeah\"")
         )
+
+        assertEquals(
+            OpeningHours(Rule(
+                Range(
+                    months = listOf(SingleMonth(Month.July)),
+                    times = listOf(ClockTime(0,0)),
+                    useSeparatorForReadability = false
+                )
+            )),
+            parse("Jul 00:00")
+        )
+
+        assertEquals(
+            OpeningHours(Rule(
+                Range(
+                    months = listOf(CalendarDate(Month.November, 11)),
+                    times = listOf(ClockTime(11,11)),
+                    useSeparatorForReadability = true
+                )
+            )),
+            parse("Nov11:11:11")
+        )
     }
 
     @Test fun parseOpeningHours_lenient() {

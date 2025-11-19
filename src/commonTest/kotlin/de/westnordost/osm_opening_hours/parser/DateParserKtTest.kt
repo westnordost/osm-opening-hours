@@ -73,6 +73,9 @@ class DateParserKtTest {
         assertEquals(null, parseDate("Jun Fr[1] , PH"))
         assertEquals(null, parseDate("Jun Fr[1] , Fr"))
 
+        assertEquals(null, parseDate("Jun01:00"))
+        assertEquals(null, parseDate("Jun24/7"))
+
         assertFails { parseDate("Jun Fr [") }
         assertFails { parseDate("Jun 1") }
         assertFails { parseDate("Jun 32") }
@@ -82,6 +85,9 @@ class DateParserKtTest {
         assertEquals(CalendarDate(June, 1), parseDate("Jun 1", true))
         assertEquals(VariableDate(Easter), parseDate("EASTER", true))
         assertEquals(CalendarDate(June, 1), parseDate("Jun １", true))
+
+        assertEquals(null, parseDate("Jun01:00", true))
+        assertEquals(null, parseDate("Jun24/7"))
     }
 
     @Test fun parseAnnualEvent() {

@@ -113,28 +113,22 @@ private fun StringWithCursor.parseClock(lenient: Boolean): Pair<Int, Int?>? {
     return Pair(hour, minutes)
 }
 
-internal fun StringWithCursor.parseHourMinutes(
-    lenient: Boolean,
-    allowWhitespacesAroundMinuteSeparator: Boolean = true,
-): Pair<String, String?>? =
-    if (lenient) parseHourMinutesLenient(allowWhitespacesAroundMinuteSeparator)
-    else parseHourMinutesStrict(allowWhitespacesAroundMinuteSeparator)
+internal fun StringWithCursor.parseHourMinutes(lenient: Boolean): Pair<String, String?>? =
+    if (lenient) parseHourMinutesLenient() else parseHourMinutesStrict()
 
-private fun StringWithCursor.parseHourMinutesStrict(
-    allowWhitespacesAroundMinuteSeparator: Boolean
-): Pair<String, String>? {
+private fun StringWithCursor.parseHourMinutesStrict(): Pair<String, String>? {
     val initial = cursor
     val hour = nextNumberAndAdvance(false, 2) ?: return null
     if (hour.length != 2) {
         cursor = initial
         return null
     }
-    if (allowWhitespacesAroundMinuteSeparator) skipWhitespaces(false)
+    skipWhitespaces(false)
     if (!nextIsAndAdvance(':')) {
         cursor = initial
         return null
     }
-    if (allowWhitespacesAroundMinuteSeparator) skipWhitespaces(false)
+    skipWhitespaces(false)
     val minutes = nextNumberAndAdvance(false, 2)
     if (minutes == null || minutes.length != 2) {
         cursor = initial
@@ -143,16 +137,14 @@ private fun StringWithCursor.parseHourMinutesStrict(
     return Pair(hour, minutes)
 }
 
-private fun StringWithCursor.parseHourMinutesLenient(
-    allowWhitespacesAroundMinuteSeparator: Boolean
-): Pair<String, String?>? {
+private fun StringWithCursor.parseHourMinutesLenient(): Pair<String, String?>? {
     if (nextIs(TWENTY_FOUR_SEVEN)) return null
 
     val initial = cursor
     // allow up to three digits (but not four -> ambiguity with year numbers) to allow unambiguous typos
     val hourStr = nextNumberAndAdvance(true, 3) ?: return null
 
-    if (allowWhitespacesAroundMinuteSeparator) skipWhitespaces(true)
+    skipWhitespaces(true)
 
     // a character that denotes the end of the hours (e.g. 12h), without implying that minutes will follow
     val hasHoursEndChar =
@@ -165,7 +157,7 @@ private fun StringWithCursor.parseHourMinutesLenient(
     // lenient parsing requires a minute separator, too, because otherwise
     // it could be ambiguous with year numbers ("2000" <-> "20:00")
     if (hasHoursEndChar || hasHoursMinutesSeparator) {
-        if (allowWhitespacesAroundMinuteSeparator) skipWhitespaces(true)
+        skipWhitespaces(true)
         minutesStr = nextNumberAndAdvance(true, 3)
         if (
             // don't allow a dangling ":"
@@ -195,6 +187,27 @@ private fun StringWithCursor.parseHourMinutesLenient(
 
     return Pair(hourStr, minutesStr2)
 }
+
+internal fun StringWithCursor.nextIsHoursMinutes(lenient: Boolean): Boolean {
+    val initial = cursor
+    val hoursMinutes = parseHourMinutes(lenient) ?: return false
+    //"Jan 11" should be "January 11th" in lenient mode, not "January 11: o'clock"
+    if (hoursMinutes.second == null) {
+        cursor = initial
+        return false
+    }
+    // if after hours:minutes there is yet another hours-minutes separator, it wasn't a clock time
+    // after all, e.g. "Jan 11:11ː11" (on January 11th at 11:11) or "Jan11:24/7"
+    skipWhitespaces(lenient)
+    val nextIsSomeTimeElement = nextIsHoursMinutesSeparator(lenient) || nextIs('/')
+    cursor = initial // return cursor either way
+    return !nextIsSomeTimeElement
+}
+
+private fun StringWithCursor.nextIsHoursMinutesSeparator(lenient: Boolean): Boolean =
+    if (!lenient) nextIs(':')
+    else nextIs { it == ':' || it == '.' || it == '：' || it == 'h' || it == 'H' || it == '時' }
+
 
 internal enum class Clock12 { AM, PM }
 internal fun StringWithCursor.parseAmPm(): Clock12? {

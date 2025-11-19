@@ -55,7 +55,7 @@ additions/remarks:
   The specification does not comprehensively define where and how many spaces are allowed
   or required in-between the tokens. So, we assume that any number (including none) of them are
   allowed and only required in places where two successive tokens use the same set of characters
-  (e.g. `week05␣05:00`, `Su␣sunset`, `Jan05:␣05:00`). Other parsers consider the lack of spaces
+  (e.g. `week05␣05:00`, `Su␣sunset`). Other parsers consider the lack of spaces
   valid too, though the canonical form always contains spaces in-between for clarity and readability.
 
 - **More restrictive date ranges within month**: e.g. `easter+Su-09-We +3 days` considered invalid
