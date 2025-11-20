@@ -33,7 +33,7 @@ It is currently used in [StreetComplete](https://github.com/streetcomplete/stree
 
 # Usage
 
-Add [de.westnordost:osm-opening-hours:0.3.0](https://mvnrepository.com/artifact/de.westnordost/osm-opening-hours/0.3.0) as a Maven dependency or download the jar from there.
+Add [de.westnordost:osm-opening-hours:0.4.0](https://mvnrepository.com/artifact/de.westnordost/osm-opening-hours/0.4.0) as a Maven dependency or download the jar from there.
 
 
 Usage e.g.
