@@ -9,7 +9,7 @@ import kotlin.time.Duration
 import kotlin.time.TimeSource
 
 fun main() {
-    val file = "./src/jvmTest/resources/opening_hours_counts.tsv"
+    val file = "./src/jvmTest/resources/opening_hours_counts_jvm.tsv"
 
     val lines = FileSystem.SYSTEM.read(file.toPath()) { readUtf8() }
         .lineSequence()

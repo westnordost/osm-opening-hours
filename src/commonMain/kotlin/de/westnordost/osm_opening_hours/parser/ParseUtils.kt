@@ -78,7 +78,7 @@ internal fun StringWithCursor.nextIsRangeAndAdvance(lenient: Boolean): Boolean {
             it == '-' || // normal minus
             it == '–' || // en dash (thousands of usages!)
             it == '—' || // em dash
-            it == '〜' || // wave dash (used in Japanese)
+            it == '～' || // wave dash (used in Japanese)
             it == '〜' || // full-width tilde, sometimes used instead of the above
             it == '~'    // see above
         } != null ||
