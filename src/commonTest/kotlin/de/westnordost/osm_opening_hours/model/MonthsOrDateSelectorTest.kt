@@ -9,10 +9,13 @@ import de.westnordost.osm_opening_hours.model.AnnualEvent.*
 
 class MonthRangeTest {
     @Test fun bounds() {
-        assertFails { MonthRange(1900, July, January) }
-        assertFails { MonthRange(10000, July, January) }
-        MonthRange(1901, July, January)
-        MonthRange(9999, July, January)
+        assertFails { MonthRange(1900, January, July) }
+        assertFails { MonthRange(10000, January, July) }
+        assertFails { MonthRange(1999, July, January) }
+
+        MonthRange(1999, July, January)
+        MonthRange(1901, January, July)
+        MonthRange(9999, January, July)
     }
 
     @Test fun to_string() {

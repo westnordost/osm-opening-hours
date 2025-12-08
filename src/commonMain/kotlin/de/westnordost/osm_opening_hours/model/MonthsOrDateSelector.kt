@@ -7,7 +7,13 @@ data class MonthRange(val year: Int? = null, val start: Month, val end: Month) :
     constructor(start: Month, end: Month) : this(null, start, end)
 
     init {
-        if (year != null) validateYear("year", year)
+        if (year != null) {
+            validateYear("year", year)
+            // E.g. "1999 Nov-Feb". This is valid according to the spec, but is ambiguous.
+            // A specified year implies that it is only valid in that year, but a range that
+            // loops around the end of the year, well, expands into the next year. ("1999 Nov - 2000 Feb")
+            require(start < end) { "When a year is specified, start month must not be greater than end month" }
+        }
     }
 
     override fun toString() = sequenceOf(year, "$start-$end").joinNonEmptyStrings(" ")
