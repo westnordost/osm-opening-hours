@@ -7,6 +7,7 @@ import de.westnordost.osm_opening_hours.model.EventTime.Sunset
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
+import kotlin.test.assertTrue
 
 class ClockTimeTest {
     @Test fun bounds() {
@@ -17,6 +18,21 @@ class ClockTimeTest {
         ClockTime(23, 59)
         ClockTime(24, 0)
         ClockTime(24, 59)
+    }
+
+    @Test fun toMinutesOfDay() {
+        assertEquals(
+            12 * 60 + 59,
+            ClockTime(12,59).toMinutesOfDay()
+        )
+    }
+
+    @Test fun compareTo() {
+        assertEquals(0, ClockTime(15,40).compareTo(ClockTime(15,40)))
+        assertTrue(ClockTime(15,39) < ClockTime(15,40))
+        assertTrue(ClockTime(14,41) < ClockTime(15,40))
+        assertTrue(ClockTime(15,40) > ClockTime(15,39))
+        assertTrue(ClockTime(15,40) > ClockTime(14,41))
     }
 
     @Test fun to_string() {
@@ -31,6 +47,17 @@ class EventTimeTest {
         assertEquals("sunrise", Sunrise.toString())
         assertEquals("sunset", Sunset.toString())
         assertEquals("dusk", Dusk.toString())
+    }
+
+    @Test fun toMinutesOfDay() {
+        assertEquals(
+            6 * 60,
+            Sunrise.toMinutesOfDay()
+        )
+        assertEquals(
+            18 * 60,
+            Sunset.toMinutesOfDay()
+        )
     }
 
     @Test fun operators() {
@@ -51,6 +78,31 @@ class VariableTimeTest {
         assertEquals("(dawn+01:00)", (Dawn + ClockTime(1, 0)).toString())
         assertEquals("(sunset-00:30)", (Sunset - ClockTime(0, 30)).toString())
     }
+
+    @Test fun toMinutesOfDay() {
+        assertEquals(
+            Dawn.toMinutesOfDay() + 90,
+            (Dawn + ClockTime(1, 30)).toMinutesOfDay()
+        )
+
+        assertEquals(
+            Dawn.toMinutesOfDay() - 30,
+            (Dawn - ClockTime(0, 30)).toMinutesOfDay()
+        )
+
+        assertEquals(
+            Dawn.toMinutesOfDay(),
+            VariableTime(Dawn).toMinutesOfDay()
+        )
+    }
+
+    @Test fun compareTo() {
+        assertEquals(0, VariableTime(Dawn).compareTo(VariableTime(Dawn)))
+        assertEquals(0, (Dawn - ClockTime(0, 30)).compareTo((Dawn - ClockTime(0, 30))))
+
+        assertTrue(VariableTime(Dawn) < VariableTime(Sunrise))
+        assertTrue(VariableTime(Sunrise) > VariableTime(Dawn))
+    }
 }
 
 class ExtendedClockTimeTest {
@@ -62,6 +114,21 @@ class ExtendedClockTimeTest {
         ExtendedClockTime(47, 59)
         ExtendedClockTime(48, 0)
         ExtendedClockTime(48, 59)
+    }
+
+    @Test fun toMinutesOfDay() {
+        assertEquals(
+            47 * 60 + 59,
+            ExtendedClockTime(47,59).toMinutesOfDay()
+        )
+    }
+
+    @Test fun compareTo() {
+        assertEquals(0, ExtendedClockTime(25,40).compareTo(ExtendedClockTime(25,40)))
+        assertTrue(ExtendedClockTime(25,39) < ExtendedClockTime(25,40))
+        assertTrue(ExtendedClockTime(24,41) < ExtendedClockTime(25,40))
+        assertTrue(ExtendedClockTime(25,40) > ExtendedClockTime(25,39))
+        assertTrue(ExtendedClockTime(25,40) > ExtendedClockTime(24,41))
     }
 
     @Test fun to_string() {
