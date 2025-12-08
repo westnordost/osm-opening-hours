@@ -19,6 +19,16 @@ enum class Weekday(internal val osm: String) : WeekdaysSelector {
 /** Within a range of weekdays ([start]-[end]), may loop over the end of the week */
 data class WeekdayRange(val start: Weekday, val end: Weekday) : WeekdaysSelector {
     override fun toString() = "$start-$end"
+
+    /** Return as list of weekdays */
+    fun toWeekdays(): List<Weekday> {
+        val start = start.ordinal
+        val end = end.ordinal
+        val range =
+            if (end >= start) start .. end
+            else (end ..< Weekday.entries.size) + (0 .. start)
+        return range.map { Weekday.entries[it] }
+    }
 }
 
 /** At a specific [weekday] (s) within a month: Only the [nths] weekday. E.g. only the second

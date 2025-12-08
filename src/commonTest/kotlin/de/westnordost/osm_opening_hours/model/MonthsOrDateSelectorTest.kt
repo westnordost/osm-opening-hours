@@ -18,13 +18,32 @@ class MonthRangeTest {
         MonthRange(9999, January, July)
     }
 
+    @Test fun toMonths() {
+        assertEquals(
+            listOf(SingleMonth(January)),
+            (January..January).toSingleMonths()
+        )
+        assertEquals(
+            listOf(January, February, March, April, May, June, July).map { SingleMonth(it) },
+            (January..July).toSingleMonths()
+        )
+        assertEquals(
+            listOf(December, January).map { SingleMonth(it) },
+            (December..January).toSingleMonths()
+        )
+        assertEquals(
+            listOf(January, February, March).map { SingleMonth(1999, it) },
+            MonthRange(1999, January, March).toSingleMonths()
+        )
+    }
+
     @Test fun to_string() {
         assertEquals("Dec-Jan", MonthRange(December, January).toString())
         assertEquals("2000 Dec-Jan", MonthRange(2000, December, January).toString())
     }
 }
 
-class MonthInYearTest {
+class SingleMonthTest {
     @Test fun bounds() {
         assertFails { SingleMonth(1900, July) }
         assertFails { SingleMonth(10000, July) }
