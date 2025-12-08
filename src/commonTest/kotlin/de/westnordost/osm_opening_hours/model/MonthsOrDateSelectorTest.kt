@@ -13,7 +13,7 @@ class MonthRangeTest {
         assertFails { MonthRange(10000, January, July) }
         assertFails { MonthRange(1999, July, January) }
 
-        MonthRange(1999, July, January)
+        MonthRange(July, January)
         MonthRange(1901, January, July)
         MonthRange(9999, January, July)
     }
@@ -39,7 +39,7 @@ class MonthRangeTest {
 
     @Test fun to_string() {
         assertEquals("Dec-Jan", MonthRange(December, January).toString())
-        assertEquals("2000 Dec-Jan", MonthRange(2000, December, January).toString())
+        assertEquals("2000 Jan-Dec", MonthRange(2000, January, December).toString())
     }
 }
 

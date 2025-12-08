@@ -26,7 +26,7 @@ data class WeekdayRange(val start: Weekday, val end: Weekday) : WeekdaysSelector
         val end = end.ordinal
         val range =
             if (end >= start) start .. end
-            else (end ..< Weekday.entries.size) + (0 .. start)
+            else (start ..< Weekday.entries.size) + (0 .. end)
         return range.map { Weekday.entries[it] }
     }
 }

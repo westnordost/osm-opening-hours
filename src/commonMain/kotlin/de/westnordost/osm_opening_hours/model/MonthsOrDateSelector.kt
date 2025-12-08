@@ -22,7 +22,7 @@ data class MonthRange(val year: Int? = null, val start: Month, val end: Month) :
         val end = end.ordinal
         val range =
             if (end >= start) start .. end
-            else (end ..< Month.entries.size) + (0 .. start)
+            else (start ..< Month.entries.size) + (0 .. end)
         return range.map { SingleMonth(year, Month.entries[it]) }
     }
 
