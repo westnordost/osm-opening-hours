@@ -7,7 +7,9 @@ sealed interface TimesSelector
 
 sealed interface TimePointsSelector : TimesSelector
 
-sealed interface TimeSpansSelector : TimesSelector
+sealed interface TimeSpansSelector : TimesSelector {
+    val openEnd: Boolean
+}
 
 sealed interface Interval
 
@@ -33,7 +35,7 @@ data class TimeIntervals(
 data class TimeSpan(
     val start: Time,
     val end: ExtendedTime,
-    val openEnd: Boolean = false
+    override val openEnd: Boolean = false
 ) : TimeSpansSelector {
 
     override fun toString(): String {
@@ -63,4 +65,6 @@ data class TimeSpan(
 /** From [start] time with open end */
 data class StartingAtTime(val start: Time) : TimeSpansSelector {
     override fun toString() = "$start+"
+
+    override val openEnd: Boolean get() = true
 }

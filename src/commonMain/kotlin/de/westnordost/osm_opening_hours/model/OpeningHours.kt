@@ -82,6 +82,10 @@ enum class RuleType(internal val osm: String) {
      *  else. (A comment is recommended but not required) */
     Unknown("unknown");
 
+    /** Whether this is closed (= "off" or "closed")*/
+    val isClosed: Boolean get() =
+        this == Closed || this == Off
+
     override fun toString() = osm
 }
 
