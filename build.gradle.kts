@@ -1,8 +1,8 @@
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
-    kotlin("multiplatform") version "2.1.0"
-    id("com.vanniktech.maven.publish") version "0.34.0"
+    kotlin("multiplatform") version "2.3.0"
+    id("com.vanniktech.maven.publish") version "0.36.0"
     id("org.jetbrains.dokka") version "2.1.0"
 }
 
@@ -67,7 +67,7 @@ kotlin {
         commonTest {
             dependencies {
                 implementation(kotlin("test"))
-                api("org.jetbrains.kotlinx:kotlinx-io-core:0.8.0")
+                implementation("org.jetbrains.kotlinx:kotlinx-io-core:0.8.0")
             }
         }
         jvmTest {
