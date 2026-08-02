@@ -134,3 +134,11 @@ tasks.register<UpdateOpeningHoursTask>("updateOpeningHours") {
         "src/commonTest/resources/opening_hours_counts.tsv",
     )
 }
+
+tasks.register<JavaExec>("printStatistics") {
+    val testTask = tasks.named<Test>("jvmTest")
+    dependsOn(testTask.map { it.classpath })
+    classpath = testTask.get().classpath
+
+    mainClass.set("tasks.print_statistics.PrintStatisticsKt")
+}
