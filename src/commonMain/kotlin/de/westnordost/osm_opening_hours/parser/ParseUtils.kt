@@ -36,8 +36,10 @@ internal fun StringWithCursor.nextIsCommaAndAdvance(lenient: Boolean, skipWhites
             it == '，' || // full-width comma
             it == '、' || // chinese enumeration comma
             it == '､' || // half-width chinese enumeration comma
-            it == '﹑'   // some other variant of above
-        } != null
+            it == '﹑' || // some other variant of above
+            it == '،' // arabic comma
+        } != null ||
+        ws > 0 && nextIsAndAndAdvance()
     }
 
     if (isComma) {
@@ -47,6 +49,14 @@ internal fun StringWithCursor.nextIsCommaAndAdvance(lenient: Boolean, skipWhites
         return false
     }
 }
+
+private fun StringWithCursor.nextIsAndAndAdvance(): Boolean =
+    nextIsAndAdvance("&") ||
+    nextIsAndAdvance("and ", true) || // en
+    nextIsAndAdvance("und ", true) || // de
+    nextIsAndAdvance("y ", true)   || // es
+    nextIsAndAdvance("et ", true)  || // fr
+    nextIsAndAdvance("e ", true)      // it, pt
 
 /** Returns true if next character is a colon. If lenient, any kind of colon: normal, full-width comma, ...
  *  If [skipWhitespaces], the function will also consume any whitespaces in front of the character. */
@@ -80,9 +90,10 @@ internal fun StringWithCursor.nextIsRangeAndAdvance(lenient: Boolean): Boolean {
             it == '—' || // em dash
             it == '～' || // wave dash (used in Japanese)
             it == '〜' || // full-width tilde, sometimes used instead of the above
+            it == '到' || // chinese to
             it == '~'    // see above
         } != null ||
-        ws > 0 && nextIsAndAdvance("to ", true) // (thousands of usages!)
+        ws > 0 && nextIsAndAdvance("to ", true) // thousands of usages!
     }
 
     if (isRange) {

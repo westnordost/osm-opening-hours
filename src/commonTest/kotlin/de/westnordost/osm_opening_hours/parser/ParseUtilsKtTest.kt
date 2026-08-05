@@ -69,6 +69,13 @@ class ParseUtilsKtTest {
         assertEquals(true, StringWithCursor("﹑").nextIsCommaAndAdvance(true))
         assertEquals(true, StringWithCursor("，").nextIsCommaAndAdvance(true))
         assertEquals(true, StringWithCursor("､").nextIsCommaAndAdvance(true))
+        assertEquals(false, StringWithCursor("and ").nextIsCommaAndAdvance(true))
+        assertEquals(false, StringWithCursor(" and").nextIsCommaAndAdvance(true))
+        assertEquals(false, StringWithCursor(" and ").nextIsCommaAndAdvance(true, skipWhitespaces = false))
+        assertEquals(true, StringWithCursor(" and ").nextIsCommaAndAdvance(true, skipWhitespaces = true))
+        assertEquals(true, StringWithCursor(" y ").nextIsCommaAndAdvance(true, skipWhitespaces = true))
+        assertEquals(true, StringWithCursor(" et ").nextIsCommaAndAdvance(true, skipWhitespaces = true))
+        assertEquals(true, StringWithCursor(" e ").nextIsCommaAndAdvance(true, skipWhitespaces = true))
     }
 
     @Test fun nextIsColonAndAdvance() {

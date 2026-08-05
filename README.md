@@ -10,7 +10,7 @@ A Kotlin multiplatform library to parse OpenStreetMap opening hours from a strin
 
 - It mostly follows the OpenStreetMap [opening hours specification](https://wiki.openstreetmap.org/wiki/Key:opening_hours/specification). For details and remarks,
   see the section [Specification](#Specification).
-  As of August 2026, 96.88% of opening hours strings in the wild are considered valid, 99.16% are understood.
+  As of August 2026, 96.88% of opening hours strings in the wild are considered valid, 99.17% are understood.
 
 
 - The data model is type-safe, i.e. it is not possible to create an invalid opening hours string
@@ -76,7 +76,8 @@ lenient:
 - case is ignored (e.g. `MO-FR`, `WEEK 01`, `Easter`…)
 - en dashes, em dashes, `~`, `〜` and ` to ` can be used for ranges (e.g. `08:00—12:00`, `Mo to Fr`)
 - full-width characters (`：`, `，`, `；`, `０`, `９`,…) wherever a normal one is expected
-- Chinese `、` enumeration comma and variants
+- Chinese `、` enumeration comma and variants, arabic comma
+- interpret ` and ` (plus in a few other languages) identically to a comma
 - any [unicode whitespace](https://en.wikipedia.org/wiki/Whitespace_character) instead of only the normal space allowed in-between the tokens
 - any unicode digit in any language instead of only 0-9
 - rules with "additional" modifier may follow even if previous rule did neither terminate in a time,
